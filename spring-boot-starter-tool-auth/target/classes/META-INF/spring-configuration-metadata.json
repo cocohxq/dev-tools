@@ -1,0 +1,11 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "com.dev.tool.auth.configuration.AuthConfigProperties",
+      "name": "spring.dev.tool",
+      "type": "com.dev.tool.auth.configuration.AuthConfigProperties"
+    }
+  ],
+  "properties": []
+}

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/dev-tools.iml" filepath="$PROJECT_DIR$/.idea/dev-tools.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-boot-starter-tool-auth/spring-boot-starter-tool-auth.iml" filepath="$PROJECT_DIR$/spring-boot-starter-tool-auth/spring-boot-starter-tool-auth.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-boot-starter-tool-cache/spring-boot-starter-tool-cache.iml" filepath="$PROJECT_DIR$/spring-boot-starter-tool-cache/spring-boot-starter-tool-cache.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-boot-starter-tool-common/spring-boot-starter-tool-common.iml" filepath="$PROJECT_DIR$/spring-boot-starter-tool-common/spring-boot-starter-tool-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-boot-starter-tool-db/spring-boot-starter-tool-db.iml" filepath="$PROJECT_DIR$/spring-boot-starter-tool-db/spring-boot-starter-tool-db.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-boot-starter-tool-jms/spring-boot-starter-tool-jms.iml" filepath="$PROJECT_DIR$/spring-boot-starter-tool-jms/spring-boot-starter-tool-jms.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-boot-starter-tool-monitor/spring-boot-starter-tool-monitor.iml" filepath="$PROJECT_DIR$/spring-boot-starter-tool-monitor/spring-boot-starter-tool-monitor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-boot-starter-tool-rmi/spring-boot-starter-tool-rmi.iml" filepath="$PROJECT_DIR$/spring-boot-starter-tool-rmi/spring-boot-starter-tool-rmi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-boot-starter-tool-web/spring-boot-starter-tool-web.iml" filepath="$PROJECT_DIR$/spring-boot-starter-tool-web/spring-boot-starter-tool-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tool-application/tool-application.iml" filepath="$PROJECT_DIR$/tool-application/tool-application.iml" />
+    </modules>
+  </component>
+</project>

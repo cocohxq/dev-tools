@@ -1,0 +1,39 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "com.dev.tool.cache.configuration.RedisConfigProperties",
+      "name": "spring.dev.tool.cache.redis",
+      "type": "com.dev.tool.cache.configuration.RedisConfigProperties"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "com.dev.tool.cache.configuration.RedisConfigProperties",
+      "name": "spring.dev.tool.cache.redis.host",
+      "description": "#最大空闲数，数据库连接的最大空闲时间。超过空闲时间，数据库连接将被标记为不可用，然后被释放。设为0表示无限制。\n redis.maxIdle=300\n #连接池的最大数据库连接数。设为0表示无限制\n redis.maxActive=600\n #最大建立连接等待时间。如果超过此时间将接到异常。设为-1表示无限制。\n redis.maxWait=1000\n #在borrow一个jedis实例时，是否提前进行alidate操作；如果为true，则得到的jedis实例均是可用的；\n redis.testOnBorrow=true",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.dev.tool.cache.configuration.RedisConfigProperties",
+      "name": "spring.dev.tool.cache.redis.key-serializer-class",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.dev.tool.cache.configuration.RedisConfigProperties",
+      "name": "spring.dev.tool.cache.redis.password",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.dev.tool.cache.configuration.RedisConfigProperties",
+      "defaultValue": 0,
+      "name": "spring.dev.tool.cache.redis.port",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "com.dev.tool.cache.configuration.RedisConfigProperties",
+      "name": "spring.dev.tool.cache.redis.value-serializer-class",
+      "type": "java.lang.String"
+    }
+  ]
+}
