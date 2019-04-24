@@ -14,6 +14,10 @@
                 <#include "redis.ftl"/>
             </#if>
 
+            <#if tools?contains(',zookeeper,')>
+                <#include "zookeeper.ftl"/>
+            </#if>
+
         </div>
     </div>
 <@footer/>

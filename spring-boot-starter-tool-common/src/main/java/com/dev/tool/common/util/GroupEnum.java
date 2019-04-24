@@ -2,7 +2,7 @@ package com.dev.tool.common.util;
 
 public enum GroupEnum {
 
-    RMI(1,"远程调用工具",1),CACHE(5,"缓存工具",5),JMS(10,"消息工具",10);
+    RMI(1,"远程调用工具",1),CACHE(5,"缓存工具",5),JMS(10,"消息工具",10),CONFIG(15,"配置工具",15);
 
     GroupEnum(Integer index, String name,Integer order) {
         this.name = name;

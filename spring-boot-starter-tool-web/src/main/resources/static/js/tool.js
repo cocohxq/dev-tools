@@ -65,6 +65,9 @@ function ajaxLoad(formConfig) {
     if(formConfig.resultType == "formatJson"){
         retType = "text";
     }
+    if(formConfig.async == undefined){
+        formConfig.async = true;
+    }
 
     var loadingLayer;
 
@@ -76,7 +79,7 @@ function ajaxLoad(formConfig) {
             'Content-Type': 'application/json'
         },
         data: JSON.stringify(param),
-        async:true,
+        async:formConfig.async,
         dataType: retType,
         beforeSend:function(){
             if(formConfig.loading){
