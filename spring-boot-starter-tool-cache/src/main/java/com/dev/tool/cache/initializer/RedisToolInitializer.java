@@ -17,7 +17,7 @@ public class RedisToolInitializer implements Initializer {
 
     @Override
     public void init() {
-        processor.initCompile();
+        processor.reLoad(null);
     }
 
     public RedisToolProcessor getProcessor() {

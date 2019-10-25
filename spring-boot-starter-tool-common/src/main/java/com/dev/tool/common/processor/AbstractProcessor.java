@@ -19,9 +19,9 @@ public abstract class AbstractProcessor implements Processor {
                 return result;
             }
             switch (event.getEventEnum()){
-                case INIT:result= ready(event);break;
-                case GET:result = get(event);break;
-                case SUBMIT:result=submit(event);break;
+                case PAGELOAD:result= pageLoad(event);break;
+                case DATALOAD:result = dataLoad(event);break;
+                case RELOAD:result = reLoad(event);break;
                 default:ResultUtils.errorResult("不支持的event:" + event.getEventEnum().getName());
             }
             return result;
@@ -36,21 +36,22 @@ public abstract class AbstractProcessor implements Processor {
      *
      * @return
      */
-    public abstract Result ready(Event event);
+    public abstract Result pageLoad(Event event);
 
     /**
      * 页面中按钮异步交互
      *
      * @return
      */
-    public abstract Result get(Event event);
+    public abstract Result dataLoad(Event event);
 
     /**
-     * 提交
-     *
+     * 重新加载
+     * @param event
      * @return
      */
-    public abstract Result submit(Event event);
+    public abstract Result reLoad(Event event);
+
 
     /**
      * 进入前做的动作

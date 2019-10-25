@@ -1,13 +1,14 @@
 var curLayer;
 $(document).ready(function () {
     //通用新增环境
-    $(".addEnv").unbind("click").bind('click',function () {
-        var parentId = "#"+$(this).parents(".tool").eq(0).attr("id");
+    $(".openWin").unbind("click").bind('click',function () {
+        let parentId = "#"+$(this).parents(".tool").eq(0).attr("id");
+        let contentId = $(this).attr("context-id");
         curLayer = layer.open({
             type: 1,
             skin: 'layui-layer-rim', //加上边框
             area: ['800px', '500px'], //宽高
-            content: $(parentId +" #env").html()
+            content: $(parentId +" #"+contentId).html()
         });
     });
 
@@ -39,6 +40,10 @@ $(document).ready(function () {
             $(this).val("");
         });
         layui.form.render('select');
+    });
+
+    $(".close").unbind("click").bind('click',function () {
+        closeLayer();
     });
 
 });

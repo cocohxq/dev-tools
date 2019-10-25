@@ -25,7 +25,7 @@ function buildTree(nodes){
 function loadZookeeperValue(node) {
     ajaxLoad({
         id:"zookeeper",
-        eventName:"get",
+        eventName:"DATALOAD",
         toolName:"zookeeper",
         eventSource:"loadValue",
         addCookie:false,
@@ -45,7 +45,7 @@ function loadZookeeperChildren(node) {
     var children;
     ajaxLoad({
         id:"zookeeper",
-        eventName:"get",
+        eventName:"DATALOAD",
         toolName:"zookeeper",
         eventSource:"loadChildren",
         addCookie:false,

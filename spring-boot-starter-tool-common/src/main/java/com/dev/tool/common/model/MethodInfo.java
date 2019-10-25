@@ -1,5 +1,8 @@
 package com.dev.tool.common.model;
 
+import org.springframework.cglib.reflect.FastClass;
+import org.springframework.cglib.reflect.FastMethod;
+
 import java.lang.reflect.Method;
 
 public class MethodInfo {

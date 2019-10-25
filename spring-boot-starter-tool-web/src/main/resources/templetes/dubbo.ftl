@@ -2,19 +2,15 @@
 
     <div id="form" class="layui-form">
         <div style="float:right">
-            <button class="layui-btn addEnv">新增环境</button>
+            <button class="layui-btn openWin" context-id="config">解析规则配置</button>
+            <button class="layui-btn openWin" context-id="jarPath">jar来源配置</button>
+            <button class="layui-btn" onclick="reload()">重新载入配置</button>
         </div>
 
         <div class="layui-form-item">
             <label class="layui-form-label"><span class="star">*</span>jar名称</label></label>
             <div class="layui-input-block">
-                <select name="jarName" lay-filter="jarName">
-                    <#if jarInfos??>
-                        <option value="-1">请选择</option>
-                        <#list jarInfos as jarInfo>
-                            <option value="${jarInfo}">${jarInfo}</option>
-                        </#list>
-                    </#if>
+                <select id="artifactId" name="jarName" lay-filter="jarName">
                 </select>
             </div>
         </div>
@@ -75,34 +71,63 @@
 
 
 
-    <div id="env" style="display:none;padding-top:10px">
-        <div id="envContent">
+    <div id="config" style="display:none;padding-top:10px">
+        <div id="configContent">
             <div class="layui-form-item dubbo">
-                <label class="layui-form-label"><span class="star">*</span>接口jar路径</label>
+                <label class="layui-form-label" style="width: 20%"><span class="star">*</span>jar的artifactId解析规则(正则)</label>
+            </div>
+            <div class="layui-form-item dubbo">
+                <div class="layui-inline" style="width: 100%">
+                    <label class="layui-form-label"><span class="star">*</span>include:</label>
+                    <div class="layui-input-inline" style="width: 30%">
+                        <input type="text" name="artifactIdIncludeRulePattern" lay-verify="required" autocomplete="off" placeholder="*(-api|-client).*.jar" class="layui-input" value="">
+                    </div>
+
+                    <label class="layui-form-label">exclude:</label>
+                    <div class="layui-input-inline" style="width: 40%">
+                        <input type="text" name="artifactIdExcludeRulePattern" autocomplete="off" placeholder="elasticsearch.*|log4j.*|rocketmq.*" class="layui-input" value="">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item dubbo">
+                <label class="layui-form-label" style="width: 17%"><span class="star">*</span>接口类名规则(正则)</label>
+            </div>
+            <div class="layui-form-item dubbo">
+                <div class="layui-inline" style="width: 100%">
+                    <label class="layui-form-label"><span class="star">*</span>include:</label>
+                    <div class="layui-input-inline" style="width: 80%">
+                        <input type="text" name="classRulePattern" lay-verify="required" autocomplete="off" placeholder=".*service" class="layui-input" value="">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button onclick="saveConfig(this)" type="reset" class="layui-btn layui-btn-primary">保存&重载</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="jarPath" style="display:none;padding-top:10px">
+        <div id="jarPathContent">
+            <div class="layui-form-item dubbo">
+                <label class="layui-form-label"><span class="star">*</span>jar来源配置</label>
                 <div class="layui-input-block">
                     <input type="text" name="jarPath" lay-verify="required" placeholder="war工程:/xxx/target/WEB-INF/lib,springboot工程:/xxx/xxx/xxx/xxx.jar" autocomplete="off" class="layui-input">
                 </div>
             </div>
-
-            <div class="layui-form-item dubbo">
-                <label class="layui-form-label"><span class="star">*</span>jar包名过滤</label>
-                <div class="layui-input-block">
-                    <input type="text" name="nameContainStr" lay-verify="required" autocomplete="off" placeholder="include/exclude提供dubbo 如：-client,-api/elasticsearch,log4j,rocketmq-client" class="layui-input" value="-api/">(多个，分隔)
-                </div>
-            </div>
-
-            <div class="layui-form-item dubbo">
-                <label class="layui-form-label"><span class="star">*</span>service类package名</label>
-                <div class="layui-input-block">
-                    <input type="text" name="packageName" lay-verify="required" autocomplete="off" placeholder="提供dubbo服务的service类所在package名" class="layui-input" value="service">(多个，分隔)
-                </div>
-            </div>
-
             <div class="layui-form-item">
                 <div class="layui-input-block">
-                    <button onclick="loadDubboParam(this)" type="reset" class="layui-btn layui-btn-primary">加载入参</button>
+                    <button onclick="saveJarPath(this)" type="reset" class="layui-btn layui-btn-primary">保存&重载</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="jarList" style="display:none;padding-top:10px">
+        <label>本次加载的jar包列表：</label>
+        <div id="jarListContent">
         </div>
     </div>
 </div>

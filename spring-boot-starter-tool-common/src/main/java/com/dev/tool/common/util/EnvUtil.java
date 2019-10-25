@@ -96,9 +96,9 @@ public class EnvUtil {
         }
     }
 
-    public static boolean updateData(GroupEnum group, String pathKey, File data, boolean insertIfAbsent) {
+    public static boolean updateDatas(GroupEnum group, String pathKey, List<File> datas, boolean insertIfAbsent) {
         try {
-            FileUtils.updateFile(FileUtils.concatPath(ConstantUtils.getDataPath(), group.toString(), pathKey),data , insertIfAbsent);
+            FileUtils.updateFiles(FileUtils.concatPath(ConstantUtils.getDataPath(), group.toString(), pathKey),datas , insertIfAbsent);
             return true;
         } catch (Exception e) {
             logger.error("更新配置异常,key:"+pathKey,e);
@@ -106,13 +106,16 @@ public class EnvUtil {
         }
     }
 
-    public static boolean updateData(GroupEnum group, String pathKey, Object data, boolean insertIfAbsent) {
+    public static List<File> getDataFileList(GroupEnum group,String pathKey) {
         try {
-            FileUtils.updateFileContent(FileUtils.concatPath(ConstantUtils.getDataPath(), group.toString(), pathKey), JSONObject.toJSONString(data), insertIfAbsent);
-            return true;
+            File dataDir = new File(FileUtils.concatPath(ConstantUtils.getDataPath(), group.toString(),pathKey));
+            if (!dataDir.exists()) {
+                return new ArrayList<>();
+            }
+            return Arrays.asList(dataDir.listFiles()).stream().filter(f -> !f.isHidden()).collect(Collectors.toList());
         } catch (Exception e) {
-            logger.error("更新配置异常,key:"+pathKey,e);
-            return false;
+            logger.error("获取配置列表异常",e);
+            return null;
         }
     }
 
@@ -138,7 +141,15 @@ public class EnvUtil {
         }
     }
 
-    public static String getActualFilePath(GroupEnum group, String pathKey) {
+    public static String getDataActualFilePath(GroupEnum group) {
+        try {
+            return FileUtils.concatPath(ConstantUtils.getDataPath(), group.toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static String getDataActualFilePath(GroupEnum group, String pathKey) {
         try {
             return FileUtils.concatPath(ConstantUtils.getDataPath(), group.toString(), pathKey);
         } catch (Exception e) {
@@ -146,7 +157,5 @@ public class EnvUtil {
             return null;
         }
     }
-
-
 
 }

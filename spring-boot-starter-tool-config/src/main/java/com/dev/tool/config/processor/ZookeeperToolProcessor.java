@@ -26,7 +26,7 @@ public class ZookeeperToolProcessor extends AbstractProcessor {
 
     //返回root节点
     @Override
-    public Result ready(Event event) {
+    public Result pageLoad(Event event) {
         try {
             ZookeeperNode node = new ZookeeperNode();
             node.setName(ROOT);
@@ -40,7 +40,7 @@ public class ZookeeperToolProcessor extends AbstractProcessor {
     }
 
     @Override
-    public Result get(Event event) {
+    public Result dataLoad(Event event) {
         switch (event.getEventSource()) {
             case "loadValue":
                 return loadValue(event.getEventData().get("path"));
@@ -48,6 +48,11 @@ public class ZookeeperToolProcessor extends AbstractProcessor {
                 return loadChildren(event.getEventData().get("path"));
         }
         return ResultUtils.errorResult("不支持的eventSource:" + event.getEventSource());
+    }
+
+    @Override
+    public Result reLoad(Event event) {
+        return null;
     }
 
     private Result loadValue(String path) {
@@ -84,10 +89,6 @@ public class ZookeeperToolProcessor extends AbstractProcessor {
     }
 
 
-    @Override
-    public Result submit(Event event) {
-        return null;
-    }
 
 
     @Override

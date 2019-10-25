@@ -6,7 +6,7 @@ public class InterfaceInfo {
 
     private String interfaceName;
 
-    private Map<String,MethodInfo> methodInfoMap;
+    private Map<String, MethodInfo> methodInfoMap;
 
     private String version;
 

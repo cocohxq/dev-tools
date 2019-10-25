@@ -1,7 +1,6 @@
 package com.dev.tool.cache.processor;
 
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.dev.tool.cache.model.RedisInfo;
 import com.dev.tool.common.model.Event;
 import com.dev.tool.common.model.Result;
@@ -14,9 +13,7 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 工具主页控制器
@@ -48,14 +45,14 @@ public class RedisToolProcessor extends AbstractProcessor {
     }
 
     @Override
-    public synchronized Result ready(Event event) {
+    public synchronized Result pageLoad(Event event) {
         RedisConnection cn = redisTemplate.getConnectionFactory().getConnection();
         try {
             Properties properties = cn.info();
             Map<String,Object> map = new HashMap<>();
             map.put("redisInfo",new RedisInfo(properties));
             map.put("outClassSupply",outClassSupply);
-            map.put("classes",CacheUtils.getRedisClassLoadedSet());
+            map.put("classes",CacheUtils.getCacheClassLoadedSet());
             return ResultUtils.successResult(map);
         } finally {
             if (null != cn) {
@@ -65,18 +62,7 @@ public class RedisToolProcessor extends AbstractProcessor {
     }
 
     @Override
-    public synchronized Result get(Event event) {
-        try {
-            Set<String> keySet = redisTemplate.keys(event.getEventData().get("keyStr"));
-            return ResultUtils.successResult(null != keySet ? new ArrayList(keySet) : null);
-        } catch (Exception e) {
-            logger.error("请求cache异常,info:" + JSONObject.toJSONString(event), e);
-            return ResultUtils.errorResult(e.toString());
-        }
-    }
-
-    @Override
-    public synchronized Result submit(Event event) {
+    public synchronized Result dataLoad(Event event) {
         try {
             switch (event.getEventSource()) {
                 case "query":
@@ -84,8 +70,11 @@ public class RedisToolProcessor extends AbstractProcessor {
                 case "delete":
                     redisTemplate.delete(event.getEventData().get("key"));
                     return ResultUtils.successResult("已删除");
-                case "persist":
-                    return persistJavaFileAndCompile(event);
+                case "load":
+                    return load(event);
+                case "keys":
+                    Set<String> keySet = redisTemplate.keys(event.getEventData().get("keyStr"));
+                    return ResultUtils.successResult(null != keySet ? new ArrayList(keySet) : null);
             }
             return ResultUtils.errorResult("不支持的eventSource:"+event.getEventSource());
         } catch (Exception e) {
@@ -94,28 +83,17 @@ public class RedisToolProcessor extends AbstractProcessor {
         }
     }
 
-    private Result persistJavaFileAndCompile(Event event){
+
+    private Result load(Event event){
         try {
             if(null == event.getEventData().get("sources")){
                 return ResultUtils.errorResult("没有找到提交的源码");
             }
             List<String> javaSources = JSONArray.parseArray(event.getEventData().get("sources"),String.class);
-            //编译源码并存储
-            List<String> classNames = CompileUtil.compile(javaSources,EnvUtil.getActualFilePath(GroupEnum.CACHE,CLASS_DIR));
-
-            Set<String> classNameSet = new HashSet<>(classNames);
-            //加载class
-            Set<String> loadedClassSet =  ClassUtils.loadClassByPath(EnvUtil.getActualFilePath(GroupEnum.CACHE,CLASS_DIR),classNameSet);
-            CacheUtils.getRedisClassLoadedSet().addAll(loadedClassSet.stream().filter(c->{
-                Class clazz = ClassUtils.forName(c,ClassUtils.getRedisClassLoader());
-                if(null == clazz){
-                    throw new RuntimeException(String.format("类%s没有成功初始化",c));
-                }
-                int md = clazz.getModifiers();
-                return !Modifier.isAbstract(md) && !Modifier.isInterface(md) && !clazz.isEnum();
-            }).collect(Collectors.toSet()));
-
-            return ResultUtils.successResult(CacheUtils.getRedisClassLoadedSet());
+            //1.编译源码并覆盖存储
+            List<String> classNames = CompileUtil.compile(javaSources,EnvUtil.getDataActualFilePath(GroupEnum.CACHE,CLASS_DIR));
+            //2.reload
+            return reLoad(null);
         } catch (Exception e) {
             logger.error("加载异常",e);
             return ResultUtils.errorResult("加载异常",e);
@@ -123,20 +101,19 @@ public class RedisToolProcessor extends AbstractProcessor {
 
     }
 
-    /**
-     * 初始化编译class
-     * @return
-     */
-    public Result initCompile(){
+    @Override
+    public Result reLoad(Event event) {
         try {
-            Set<String> loadedClassSet =  ClassUtils.loadClassByPath(EnvUtil.getActualFilePath(GroupEnum.CACHE,CLASS_DIR),null);
-            CacheUtils.getRedisClassLoadedSet().addAll(loadedClassSet);
-            return ResultUtils.successResult("已加载");
+            //1.重新加载class
+            Set<String> loadedClassSet =  ClassUtils.loadClassByPath(GroupEnum.CACHE,CLASS_DIR);
+            //2.重置缓存
+            CacheUtils.destoryCacheClassLoadedSet();
+            CacheUtils.getCacheClassLoadedSet().addAll(loadedClassSet);
+            return ResultUtils.successResult(CacheUtils.getCacheClassLoadedSet());
         } catch (Exception e) {
-            logger.error("初始化加载class异常",e);
-            return ResultUtils.errorResult("初始化加载class异常",e);
+            logger.error("加载异常",e);
+            return ResultUtils.errorResult("加载异常",e);
         }
-
     }
 
 
@@ -144,12 +121,8 @@ public class RedisToolProcessor extends AbstractProcessor {
         try {
             String key = event.getEventData().get("key");
             String valueClass = event.getEventData().get("valueClass");
-
-//            if(!CacheUtils.getRedisClassLoadedSet().contains(valueClass)){
-//                return ResultUtils.successResult(valueClass+"对应源码还未提交到系统编译");
-//            }
-            ContextUtils.getRedisClassthreadLocal().set(valueClass);
-
+            ContextUtils.getContext().setClazz(ClassUtils.forName(valueClass,ClassLoadUtils.getInstance(GroupEnum.CACHE)));
+            ContextUtils.getContext().setGroupEnum(GroupEnum.CACHE);
             Object o = null;
             //NONE("none"), STRING("string"), LIST("list"), SET("set"), ZSET("zset"), HASH("hash");
             DataType type = redisTemplate.type(key);

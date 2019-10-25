@@ -48,9 +48,6 @@ public class ToolController {
         toolGroupList.stream().forEach(l ->{
             l.getToolList().stream().forEach(k ->{
                 tools.add(k.getGroupToolEnum().getName());
-                if(k.getGroupToolEnum().equals(GroupToolEnum.DUBBO) && CacheUtils.getDubboJarInfoHashMap().size() > 0){
-                    model.addAttribute("jarInfos", new ArrayList<>(CacheUtils.getDubboJarInfoHashMap().keySet()));
-                }
             });
         });
         model.addAttribute("tools",","+tools.stream().collect(Collectors.joining(","))+",");

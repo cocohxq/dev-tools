@@ -2,7 +2,7 @@ $(document).ready(function () {
     //加载db列表
     ajaxLoad({
         id:"redis",
-        eventName:"init",
+        eventName:"PAGELOAD",
         toolName:"redis",
         eventSource:"init",
         addCookie:false,
@@ -50,9 +50,9 @@ function addRef(obj) {
 function loadSource(obj) {
     ajaxLoad({
         id:"redis",
-        eventName:"submit",
+        eventName:"DATALOAD",
         toolName:"redis",
-        eventSource:"persist",
+        eventSource:"load",
         addCookie:false,
         loading:true,
         getValCallBack:function (param) {
@@ -82,9 +82,9 @@ function loadSource(obj) {
 function loadRedisParam(obj) {
     ajaxLoad({
         id:"redis",
-        eventName:"get",
+        eventName:"DATALOAD",
         toolName:"redis",
-        eventSource:"loadParam",
+        eventSource:"keys",
         addCookie:false,
         loading:true,
         getValCallBack:function (param) {
@@ -128,7 +128,7 @@ function commit() {
 
     ajaxLoad({
         id:"redis",
-        eventName:"submit",
+        eventName:"DATALOAD",
         toolName:"redis",
         eventSource:method,
         addCookie:false,

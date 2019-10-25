@@ -1,11 +1,41 @@
 $(document).ready(function () {
+    //加载db列表
+    ajaxLoad({
+        id:"dubbo",
+        eventName:"PAGELOAD",
+        toolName:"dubbo",
+        eventSource:"init",
+        addCookie:false,
+        getValCallBack:function (param) {
+            return true;
+        },
+        sucCallback:function (data) {
+            //下拉框渲染
+            $("#dubbo select[name='jarName'] option").remove();
+            $("#dubbo select[name='jarName']").append('<option value="-1">请选择</option>');
+            for(var i=0;i<data.jarInfos.length;i++){
+                $("#dubbo select[name='jarName']").append('<option value="'+data.jarInfos[i]+'">'+data.jarInfos[i]+'</option>');
+            }
+            layui.form.render('select');
+
+
+            //配置渲染
+            $("#dubbo input[name='jarNameIncludeRulePattern']").attr("value",data.loadConfig.jarNameIncludeRulePattern);
+            if(data.loadConfig.jarNameExcludeRulePattern){
+                $("#dubbo input[name='jarNameExcludeRulePattern']").attr("value",data.loadConfig.jarNameExcludeRulePattern);
+            }
+            $("#dubbo input[name='classRulePattern']").attr("value",data.loadConfig.classRulePattern);
+        }
+    });
+
+
     //dubbo执行结果
     $("#dubbo .submit").unbind("click").bind('click',function () {
         ajaxLoad({
             id:"dubbo",
-            eventName:"submit",
+            eventName:"DATALOAD",
             toolName:"dubbo",
-            eventSource:"submit",
+            eventSource:"invoke",
             addCookie:false,
             resultType:"formatJson",
             getValCallBack:function (param) {
@@ -45,24 +75,14 @@ $(document).ready(function () {
 });
 
 
-
-
-function loadDubboParam(obj) {
+function reload() {
     ajaxLoad({
         id:"dubbo",
-        eventName:"get",
+        eventName:"RELOAD",
         toolName:"dubbo",
-        eventSource:"loadParam",
+        eventSource:"",
         addCookie:false,
         getValCallBack:function (param) {
-            $(obj).parents("#envContent:eq(0)").find("input").each(function () {
-                var val = $(this).val();
-                if(!val){
-                    layer.alert('必填项不能为空');
-                    return false;
-                }
-                param[$(this).attr("name")] = val;
-            });
             return true;
         },
         sucCallback:function (data) {
@@ -74,6 +94,70 @@ function loadDubboParam(obj) {
             layui.form.render('select');
             closeLayer();
             layer.msg('成功');
+
+            $("#jarListContent").html('<div class="layui-form-item"><label class="layui-form-label" style="width:200px">');
+            for(var i=0;i<data.length;i++){
+                $("#jarListContent").append(data[i]+"<br>");
+            }
+            $("#jarListContent").append('</label></div>');
+
+            layer.open({
+                type: 1,
+                skin: 'layui-layer-rim', //加上边框
+                area: ['400px', '600px'], //宽高
+                content: $("#jarList").html()
+            });
+        }
+    });
+}
+
+
+function saveJarPath(obj) {
+    ajaxLoad({
+        id:"dubbo",
+        eventName:"DATALOAD",
+        toolName:"dubbo",
+        eventSource:"saveJarPath",
+        addCookie:false,
+        getValCallBack:function (param) {
+            $(obj).parents("#jarPathContent:eq(0)").find("input").each(function () {
+                var val = $(this).val();
+                if(!val){
+                    layer.alert('必填项不能为空');
+                    return false;
+                }
+                param[$(this).attr("name")] = val;
+            });
+            return true;
+        },
+        sucCallback:function (data) {
+            reload();
+        }
+    });
+}
+
+
+function saveConfig(obj) {
+    ajaxLoad({
+        id:"dubbo",
+        eventName:"DATALOAD",
+        toolName:"dubbo",
+        eventSource:"saveConfig",
+        addCookie:false,
+        getValCallBack:function (param) {
+            $(obj).parents("#configContent:eq(0)").find("input").each(function () {
+                var val = $(this).val();
+                if(!val && $(this).attr("lay-verify")=="required"){
+                    layer.alert('必填项不能为空');
+                    return false;
+                }
+                param[$(this).attr("name")] = val;
+                $("#dubbo input[name='"+$(this).attr("name")+"']").attr("value",val);//更新页面的显示
+            });
+            return true;
+        },
+        sucCallback:function (data) {
+            reload();
         }
     });
 }
@@ -93,7 +177,7 @@ function dubboSelectCascade(triggerName,actorName,ext) {
         console.log(data);
         ajaxLoad({
             id:"dubbo",
-            eventName:"get",
+            eventName:"DATALOAD",
             toolName:"dubbo",
             eventSource:triggerName,
             addCookie:false,

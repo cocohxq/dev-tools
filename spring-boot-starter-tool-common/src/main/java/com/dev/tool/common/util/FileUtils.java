@@ -1,6 +1,7 @@
 package com.dev.tool.common.util;
 
 import java.io.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class FileUtils {
@@ -38,10 +39,22 @@ public class FileUtils {
         return true;
     }
 
-    public static boolean createDirs(String filePath){
+    /**
+     * 新建目录
+     * @param filePath
+     * @return
+     */
+    public static String createDirs(String filePath,boolean coveredOnExisted){
         File file = new File(filePath);
+        if(file.exists()){
+            if(coveredOnExisted) {
+                delete(file.getPath());
+            }else{
+                return filePath;
+            }
+        }
         file.mkdirs();
-        return true;
+        return filePath;
     }
 
     /**
@@ -102,38 +115,81 @@ public class FileUtils {
         fw.flush();
     }
 
-    /**
-     * 更新文件
-     *
-     * @param filePath
-     * @throws Exception
-     */
-    public static void updateFile(String filePath, File file, boolean insertIfAbsent) throws Exception {
-        File originFile = new File(filePath);
-        if (originFile.exists()) {
-            originFile.delete();
-        } else {
-            //没有也可以更新
-            if (insertIfAbsent) {
-                new File(originFile.getParent()).mkdirs();
-            } else {
-                throw new FileNotFoundException("找不到配置");
+
+    public static void updateFiles(String dirPath, List<File> files, boolean insertIfAbsent) throws Exception {
+        File dir = new File(dirPath);
+        if (!dir.exists()) {
+            if(insertIfAbsent){
+                dir.mkdirs();
+            }else{
+                throw new FileNotFoundException("文件不存在");
             }
         }
 
-        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(originFile));
 
-        byte[] buffer = new byte[1024];
-        int length = 0;
-        while ((length = bis.read(buffer,0,buffer.length)) > 0){
-            bos.write(buffer,0,length);
+        for(File file : files){
+            try {
+                File targetFile = new File(concatPath(dir.getPath(),file.getName()));
+                if(targetFile.exists()){
+                    delete(targetFile.getPath());
+                }
+                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(targetFile));
+
+                byte[] buffer = new byte[1024];
+                int length = 0;
+                while ((length = bis.read(buffer,0,buffer.length)) > 0){
+                    bos.write(buffer,0,length);
+                }
+                bos.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        bos.flush();
     }
+
 
     public static boolean isFileExists(String filePath){
         return new File(filePath).exists();
     }
 
+    /**
+     * 删除指定path文件或文件夹
+     * @param path
+     */
+    public static void delete(String path){
+        File file = new File(path);
+        if(!file.exists()){
+            return;
+        }
+        if(file.isDirectory()){
+            deleteDir(path,true);
+        }else{
+            file.delete();
+        }
+
+    }
+
+    /**
+     * 删除文件夹
+     * @param path
+     * @param includeSelf
+     */
+    public static void deleteDir(String path,boolean includeSelf){
+        File file = new File(path);
+        if(!file.exists()){
+            return;
+        }
+        for(File childFile : file.listFiles()){
+            if(childFile.isDirectory()){
+                deleteDir(childFile.getPath(),true);
+            }else{
+                childFile.delete();
+            }
+        }
+        //如果包含自身，也删除掉
+        if(includeSelf){
+            file.delete();
+        }
+    }
 }
