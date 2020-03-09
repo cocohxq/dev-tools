@@ -56,7 +56,7 @@
 
             <div class="layui-form-item">
                 <div class="layui-input-block">
-                    <button type="reset" class="layui-btn layui-btn-primary addEnv">添加源码&重载</button>
+                    <button type="reset" class="layui-btn layui-btn-primary addEnv openWin" context-id="env">添加源码&重载</button>
                 </div>
             </div>
         </div>

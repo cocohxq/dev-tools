@@ -9,7 +9,7 @@ public class ContextUtils {
     public static Context getContext() {
         Context context = contextThreadLocal.get();
         if(null == context){
-            contextThreadLocal.set(context);
+            contextThreadLocal.set(new Context());
         }
         return contextThreadLocal.get();
     }
