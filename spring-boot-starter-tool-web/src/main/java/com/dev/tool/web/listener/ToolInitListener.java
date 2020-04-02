@@ -1,7 +1,8 @@
 package com.dev.tool.web.listener;
 
 import com.dev.tool.common.initializer.Initializer;
-import com.dev.tool.common.util.BeanFactoryUtils;
+import com.dev.tool.common.model.Tool;
+import com.dev.tool.common.processor.Processor;
 import com.dev.tool.common.util.ConstantUtils;
 import com.dev.tool.common.util.FileUtils;
 import com.dev.tool.common.util.GroupEnum;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ToolInitListener implements ApplicationListener<ContextRefreshedEvent> {
@@ -67,12 +69,11 @@ public class ToolInitListener implements ApplicationListener<ContextRefreshedEve
         try {
             Map<String, Initializer> result = applicationContext.getBeansOfType(Initializer.class);
             if(null != result){
-                result.keySet().stream().forEach(l ->{
+                result.values().stream().forEach(initializer ->{
                     try {
-                        Initializer initializer = BeanFactoryUtils.getBean(l,Initializer.class);
                         initializer.init();
                     } catch (Exception e) {
-                        logger.error(String.format("initTool,工具beanName%s启动初始化执行异常",l));
+                        logger.error(String.format("%s启动初始化执行异常",initializer.getClass().getName()));
                     }
                 });
             }

@@ -1,9 +1,7 @@
 package com.dev.tool.cache.configuration;
 
-import com.dev.tool.cache.initializer.RedisToolInitializer;
 import com.dev.tool.cache.processor.RedisToolProcessor;
 import com.dev.tool.cache.serializer.DevToolObjectSerializer;
-import com.dev.tool.common.model.Event;
 import com.dev.tool.common.model.Tool;
 import com.dev.tool.common.util.ClassUtils;
 import com.dev.tool.common.util.GroupToolEnum;
@@ -17,16 +15,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.util.StringUtils;
 import redis.clients.jedis.JedisPoolConfig;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 
 @Configuration
 @EnableConfigurationProperties(RedisConfigProperties.class)
@@ -101,17 +93,10 @@ public class RedisToolAutoConfiguration {
         return redisToolProcessor;
     }
 
-    @Bean(name = "redisToolInitializer")
-    public RedisToolInitializer initDubboToolInitializer(RedisToolProcessor redisToolProcessor) {
-        RedisToolInitializer redisToolInitializer = new RedisToolInitializer();
-        redisToolInitializer.setProcessor(redisToolProcessor);
-        return redisToolInitializer;
-    }
-
     @Bean(name = "redisTool")
     @ConditionalOnBean(RedisConfigProperties.class)
-    public Tool initRedisTool(RedisToolProcessor redisToolProcessor,RedisToolInitializer redisToolInitializer) {
-        Tool tool = new Tool(GroupToolEnum.REDIS, redisToolProcessor,redisToolInitializer);
+    public Tool initRedisTool(RedisToolProcessor redisToolProcessor) {
+        Tool tool = new Tool(GroupToolEnum.REDIS, redisToolProcessor);
         return tool;
     }
 

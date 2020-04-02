@@ -1,6 +1,5 @@
 package com.dev.tool.common.model;
 
-import com.dev.tool.common.initializer.Initializer;
 import com.dev.tool.common.processor.Processor;
 import com.dev.tool.common.util.GroupToolEnum;
 
@@ -13,14 +12,12 @@ public class Tool {
     private Processor processor;
     private String toolName;
     private int toolIndex;
-    private Initializer initializer;
 
-    public Tool(GroupToolEnum groupToolEnum, Processor processor,Initializer initializer) {
+    public Tool(GroupToolEnum groupToolEnum, Processor processor) {
         this.groupToolEnum = groupToolEnum;
         this.processor = processor;
         this.toolName = groupToolEnum.getName();
         this.toolIndex = groupToolEnum.getIndex();
-        this.initializer = initializer;
     }
 
     public GroupToolEnum getGroupToolEnum() {

@@ -7,6 +7,10 @@ public class ResultUtils {
     public static final int SUCCESS = 0;
     public static final int ERROR = -1;
 
+    public static Result successResult() {
+        return generateResult(null, SUCCESS, null);
+    }
+
     public static Result successResult(Object data) {
         return generateResult(data, SUCCESS, null);
     }

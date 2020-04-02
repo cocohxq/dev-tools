@@ -3,7 +3,7 @@ package com.dev.tool.config.processor;
 import com.dev.tool.common.model.Event;
 import com.dev.tool.common.model.Result;
 import com.dev.tool.common.processor.AbstractProcessor;
-import com.dev.tool.common.util.CacheUtils;
+import com.dev.tool.common.util.GroupToolEnum;
 import com.dev.tool.common.util.ResultUtils;
 import com.dev.tool.config.model.ZookeeperNode;
 import org.apache.zookeeper.ZooKeeper;
@@ -51,7 +51,7 @@ public class ZookeeperToolProcessor extends AbstractProcessor {
     }
 
     @Override
-    public Result reLoad(Event event) {
+    public Result refresh(Event event) {
         return null;
     }
 
@@ -112,10 +112,15 @@ public class ZookeeperToolProcessor extends AbstractProcessor {
 
     private String getZkValue(String path) throws Exception {
         byte[] data = zooKeeper.getData(path, false, null);
-        if(null != data) {
+        if (null != data) {
             return new String(data);
-        }else{
+        } else {
             return "";
         }
+    }
+
+    @Override
+    public GroupToolEnum matchGroupToolEnum() {
+        return GroupToolEnum.ZOOKEEPER;
     }
 }

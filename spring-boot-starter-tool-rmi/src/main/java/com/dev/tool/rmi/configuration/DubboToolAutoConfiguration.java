@@ -5,9 +5,7 @@ import com.alibaba.dubbo.config.ConsumerConfig;
 import com.alibaba.dubbo.config.ReferenceConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
 import com.dev.tool.common.model.Tool;
-import com.dev.tool.common.util.GroupEnum;
 import com.dev.tool.common.util.GroupToolEnum;
-import com.dev.tool.rmi.initializer.DubboToolInitializer;
 import com.dev.tool.rmi.processor.DubboToolProcessor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -75,16 +73,9 @@ public class DubboToolAutoConfiguration {
         return dubboToolProcessor;
     }
 
-    @Bean(name="dubboToolInitializer")
-    public DubboToolInitializer initDubboToolInitializer(DubboToolProcessor processor){
-        DubboToolInitializer dubboToolInitializer = new DubboToolInitializer();
-        dubboToolInitializer.setProcessor(processor);
-        return dubboToolInitializer;
-    }
-
     @Bean(name = "dubboTool")
-    public Tool initDubboTool(DubboToolProcessor dubboToolProcessor,DubboToolInitializer dubboToolInitializer) {
-        Tool tool = new Tool(GroupToolEnum.DUBBO, dubboToolProcessor,dubboToolInitializer);
+    public Tool initDubboTool(DubboToolProcessor dubboToolProcessor) {
+        Tool tool = new Tool(GroupToolEnum.DUBBO, dubboToolProcessor);
         return tool;
     }
 

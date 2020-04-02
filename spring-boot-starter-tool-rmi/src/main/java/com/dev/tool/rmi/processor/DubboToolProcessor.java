@@ -1,44 +1,50 @@
 package com.dev.tool.rmi.processor;
 
-import com.alibaba.dubbo.config.ReferenceConfig;
-import com.alibaba.dubbo.config.utils.ReferenceConfigCache;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.dev.tool.common.model.ClassLoadFromConfig;
 import com.dev.tool.common.model.Event;
 import com.dev.tool.common.model.InterfaceInfo;
 import com.dev.tool.common.model.JarFileLoadInfo;
 import com.dev.tool.common.model.MethodInfo;
 import com.dev.tool.common.model.Result;
-import com.dev.tool.common.processor.AbstractProcessor;
+import com.dev.tool.common.processor.AbstractClassSensitiveProcessor;
 import com.dev.tool.common.util.BeanFactoryUtils;
 import com.dev.tool.common.util.CacheUtils;
-import com.dev.tool.common.util.ClassLoadUtils;
+import com.dev.tool.common.util.ClassLoadFromEnum;
 import com.dev.tool.common.util.ClassUtils;
 import com.dev.tool.common.util.EnvUtil;
 import com.dev.tool.common.util.GroupEnum;
+import com.dev.tool.common.util.GroupToolEnum;
+import com.dev.tool.common.util.LockUtils;
 import com.dev.tool.common.util.RarUtils;
+import com.dev.tool.common.util.ReflectUtils;
 import com.dev.tool.common.util.ResultUtils;
 import com.dev.tool.rmi.model.DubboInvokeConfig;
+import org.apache.dubbo.config.ReferenceConfig;
+import org.apache.dubbo.config.utils.ReferenceConfigCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cglib.reflect.FastMethod;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
  * 工具主页控制器
  */
-public class DubboToolProcessor extends AbstractProcessor {
+public class DubboToolProcessor extends AbstractClassSensitiveProcessor {
 
     private Logger logger = LoggerFactory.getLogger(DubboToolProcessor.class);
 
@@ -110,18 +116,23 @@ public class DubboToolProcessor extends AbstractProcessor {
      */
     public Result saveJarPath(Map<String, String> param) {
         try {
-            Map<String,String> loadConfigMap = EnvUtil.getConfig(GroupEnum.RMI,LOAD_CONFIG,HashMap.class);
-            if(null == loadConfigMap || loadConfigMap.size() == 0){
+            if (!LockUtils.tryLock(GroupEnum.RMI)) {
+                return ResultUtils.errorResult("正在并发操作中,请稍等");
+            }
+            Map<String, String> loadConfigMap = EnvUtil.getConfig(GroupEnum.RMI, LOAD_CONFIG, HashMap.class);
+            if (null == loadConfigMap || loadConfigMap.size() == 0) {
                 return ResultUtils.errorResult("jar解析规则配置为空，请先设置解析规则配置");
             }
             String jarPath = param.get("jarPath");
             //1.解析jar包、并且移动jar包到jars目录，且判断重复jar包信息，高版本覆盖低版本
             JarFileLoadInfo jarFileLoadInfo = new JarFileLoadInfo(GroupEnum.RMI);
-            RarUtils.parseAndInitJarFile(Arrays.asList(jarPath), jarFileLoadInfo, JAR_DIR,loadConfigMap);
+            RarUtils.parseAndInitJarFile(Arrays.asList(jarPath), jarFileLoadInfo, JAR_DIR, loadConfigMap);
             return ResultUtils.successResult(true);
         } catch (Exception e) {
             logger.error("加载接口，读取方法异常", e);
             return ResultUtils.errorResult("加载接口，读取方法异常," + e.toString());
+        } finally {
+            LockUtils.unLock(GroupEnum.RMI);
         }
     }
 
@@ -132,14 +143,17 @@ public class DubboToolProcessor extends AbstractProcessor {
      */
     public Result saveConfig(Map<String, String> param) {
         try {
+            if (!LockUtils.tryLock(GroupEnum.RMI)) {
+                return ResultUtils.errorResult("正在并发操作中，请稍等");
+            }
             String artifactIdIncludeRulePattern = param.get("artifactIdIncludeRulePattern");
             String artifactIdExcludeRulePattern = param.get("artifactIdExcludeRulePattern");
             String classRulePattern = param.get("classRulePattern");
-            if(StringUtils.isEmpty(artifactIdIncludeRulePattern)){
+            if (StringUtils.isEmpty(artifactIdIncludeRulePattern)) {
                 return ResultUtils.errorResult("jar包解析配置不能为空");
             }
 
-            if(StringUtils.isEmpty(classRulePattern)){
+            if (StringUtils.isEmpty(classRulePattern)) {
                 return ResultUtils.errorResult("类包名正则表达式配置不能为空");
             }
 
@@ -163,25 +177,27 @@ public class DubboToolProcessor extends AbstractProcessor {
                 return ResultUtils.errorResult("类包名正则表达式异常," + e.toString());
             }
 
-            Map<String,String> configMap = new HashMap<>();
-            configMap.put("artifactIdIncludeRulePattern",artifactIdIncludeRulePattern);
-            configMap.put("artifactIdExcludeRulePattern",artifactIdExcludeRulePattern);
-            configMap.put("classRulePattern",classRulePattern);
-            EnvUtil.updateConfig(GroupEnum.RMI,LOAD_CONFIG,configMap,true);
+            Map<String, String> configMap = new HashMap<>();
+            configMap.put("artifactIdIncludeRulePattern", artifactIdIncludeRulePattern);
+            configMap.put("artifactIdExcludeRulePattern", artifactIdExcludeRulePattern);
+            configMap.put("classRulePattern", classRulePattern);
+            EnvUtil.updateConfig(GroupEnum.RMI, LOAD_CONFIG, configMap, true);
             return ResultUtils.successResult(true);
         } catch (Exception e) {
             logger.error("加载接口，读取方法异常", e);
             return ResultUtils.errorResult("加载接口，读取方法异常," + e.toString());
+        } finally {
+            LockUtils.unLock(GroupEnum.RMI);
         }
     }
 
     @Override
-    public Result reLoad(Event event) {
+    public Result refresh(Event event) {
         try {
             //1.获取加载规则配置
             Map<String, String> loadConfigMap = EnvUtil.getConfig(GroupEnum.RMI, LOAD_CONFIG, HashMap.class);
-            if(null == loadConfigMap){
-                if(null == event){
+            if (null == loadConfigMap) {
+                if (null == event) {
                     return ResultUtils.successResult(null);
                 }
                 return ResultUtils.errorResult("jar解析规则配置为空，请先设置解析规则配置");
@@ -189,7 +205,7 @@ public class DubboToolProcessor extends AbstractProcessor {
 
             //2.获取jar包配置
             JarFileLoadInfo jarFileLoadInfo = new JarFileLoadInfo(GroupEnum.RMI);
-            RarUtils.getExistedJarArtifact(jarFileLoadInfo, JAR_DIR);
+            RarUtils.loadRemainedJarArtifact(jarFileLoadInfo, JAR_DIR);
 
             //3.按规则加载jar的class
             ClassUtils.loadJarClassIntoJvm(jarFileLoadInfo, loadConfigMap);
@@ -198,9 +214,10 @@ public class DubboToolProcessor extends AbstractProcessor {
             jarFileLoadInfo.getFinalLoadedJarInfos().stream().forEach(l -> {
                 CacheUtils.getRmiJarInfoHashMap().put(l.getJarName(), l);
             });
-            //5.摧毁dubbo缓存
-            ReferenceConfigCache.getCache().destroyAll();
-            return ResultUtils.successResult(jarFileLoadInfo.getFinalLoadedJarInfos().stream().map(l->l.getJarName()).collect(Collectors.toList()));
+            //5.摧毁dubbo相关缓存
+            destoryCache();
+
+            return ResultUtils.successResult(jarFileLoadInfo.getFinalLoadedJarInfos().stream().map(l -> l.getJarName()).collect(Collectors.toList()));
         } catch (Exception e) {
             logger.error("加载接口，读取方法异常", e);
             return ResultUtils.errorResult("加载接口，读取方法异常," + e.toString());
@@ -216,23 +233,20 @@ public class DubboToolProcessor extends AbstractProcessor {
      */
     public Object invoke(DubboInvokeConfig config) throws Exception {
         ClassLoader originClassLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            InterfaceInfo interfaceInfo = CacheUtils.getRmiJarInfoHashMap().get(config.getJarName()).getInterfaceInfoMap().get(config.getInterfaceClassName());
-            if (null == interfaceInfo) {
-                return "未找到接口：" + config.getInterfaceClassName();
-            }
-            Thread.currentThread().setContextClassLoader(ClassLoadUtils.getInstance(GroupEnum.RMI));
-            ReferenceConfig referenceConfig = BeanFactoryUtils.getBean("referenceConfig", ReferenceConfig.class);
-            referenceConfig.setInterface(interfaceInfo.getInterfaceClazz());
-            referenceConfig.setGroup(config.getGroup());
-            referenceConfig.setVersion(config.getVersion());
-
-            Object service = ReferenceConfigCache.getCache().get(referenceConfig);
-            MethodInfo methodInfo = interfaceInfo.getMethodInfoMap().get(config.getMethodName());
-            return remoteInvoke(service, methodInfo.getMethod(), config.getParams());
-        } finally {
-            Thread.currentThread().setContextClassLoader(originClassLoader);
+        InterfaceInfo interfaceInfo = CacheUtils.getRmiJarInfoHashMap().get(config.getJarName()).getInterfaceInfoMap().get(config.getInterfaceClassName());
+        if (null == interfaceInfo) {
+            return "未找到接口：" + config.getInterfaceClassName();
         }
+        ReferenceConfig referenceConfig = BeanFactoryUtils.getBean("referenceConfig", ReferenceConfig.class);
+        referenceConfig.setInterface(interfaceInfo.getInterfaceClazz());
+        referenceConfig.setGroup(config.getGroup());
+        referenceConfig.setVersion(config.getVersion());
+
+        Object service = ReferenceConfigCache.getCache().get(referenceConfig);
+//            Object service = referenceConfig.get();
+        MethodInfo methodInfo = interfaceInfo.getMethodInfoMap().get(config.getMethodName());
+        Object obj = remoteInvoke(service, methodInfo.getMethod(), config.getParams());
+        return obj;
     }
 
 
@@ -271,5 +285,26 @@ public class DubboToolProcessor extends AbstractProcessor {
     @Override
     public Result finish(Event event, Result result) {
         return result;
+    }
+
+    @Override
+    public GroupToolEnum matchGroupToolEnum() {
+        return GroupToolEnum.DUBBO;
+    }
+
+    @Override
+    public ClassLoadFromConfig classLoadFromConfig() {
+        return new ClassLoadFromConfig(ClassLoadFromEnum.LOAD_FROM_JAR, new URL[0]);
+    }
+
+    private void destoryCache() throws Exception {
+        //移除dubbo缓存
+        ReferenceConfigCache.getCache().destroyAll();
+        ReflectUtils.modifyField("CACHE_HOLDER", ReferenceConfigCache.class,new ConcurrentHashMap<String, ReferenceConfigCache>());
+        //移除ReflectUtils的缓存
+        //移除class的缓存，后面会使用该class来反序列化生成响应对象，不移除会造成classLoader不一样，classCastException
+        ReflectUtils.modifyField("NAME_CLASS_CACHE", org.apache.dubbo.common.utils.ReflectUtils.class,new ConcurrentHashMap<String, Class<?>>());
+        ReflectUtils.modifyField("DESC_CLASS_CACHE", org.apache.dubbo.common.utils.ReflectUtils.class,new ConcurrentHashMap<String, Class<?>>());
+        ReflectUtils.modifyField("Signature_METHODS_CACHE", org.apache.dubbo.common.utils.ReflectUtils.class,new ConcurrentHashMap<String, Method>());
     }
 }

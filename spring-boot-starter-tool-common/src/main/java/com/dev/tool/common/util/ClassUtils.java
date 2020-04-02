@@ -71,8 +71,12 @@ public class ClassUtils {
                 return jarFileLoadInfo;
             }
             // 加载jar包到jvm
-            URLClassLoader urlClassLoader = new URLClassLoader(urls.toArray(new URL[0]));
-            ClassLoadUtils.reSetAndGetInstance(jarFileLoadInfo.getGroupEnum(), urlClassLoader);
+            URLClassLoader urlClassLoader = (URLClassLoader)Thread.currentThread().getContextClassLoader();
+            Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[] { URL.class });
+            method.setAccessible(true);
+            for(URL url : urls) {
+                method.invoke(urlClassLoader, url);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -129,8 +133,8 @@ public class ClassUtils {
                             jarInfo.setJarName(jarArtifactInfo.getJarName());
                             jarFileLoadInfo.getFinalLoadedJarInfos().add(jarInfo);
                         }
-                        Class clazz = ClassUtils.forName(classFullName, ClassLoadUtils.getInstance(jarFileLoadInfo.getGroupEnum()));
-                        interfaceInfos.add(loadInterface(clazz, ClassLoadUtils.getInstance(jarFileLoadInfo.getGroupEnum())));
+                        Class clazz = ClassUtils.forName(classFullName, Thread.currentThread().getContextClassLoader());
+                        interfaceInfos.add(loadInterface(clazz));
                     } catch (Throwable e) {
                         logger.error(String.format("class %s load error", classFullName), e);
                     }
@@ -143,7 +147,7 @@ public class ClassUtils {
         return jarFileLoadInfo;
     }
 
-    public static InterfaceInfo loadInterface(Class clazz, ClassLoader classLoader) throws Exception {
+    public static InterfaceInfo loadInterface(Class clazz) throws Exception {
         InterfaceInfo interfaceInfo = new InterfaceInfo();
         interfaceInfo.setInterfaceClazz(clazz);
         interfaceInfo.setInterfaceName(clazz.getName());
@@ -239,7 +243,7 @@ public class ClassUtils {
         }
 
         Set<String> set = new HashSet<>(classNameList.size());
-        ClassLoader classLoader = ClassLoadUtils.initAndGetInstance(groupEnum, targetDataPathKey);
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         for (String className : classNameList) {
             classLoader.loadClass(className);
             set.add(className);
@@ -316,6 +320,7 @@ public class ClassUtils {
         }
         return null;
     }
+
 
 
 }

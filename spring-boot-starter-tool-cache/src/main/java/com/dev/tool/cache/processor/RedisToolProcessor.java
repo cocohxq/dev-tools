@@ -2,8 +2,10 @@ package com.dev.tool.cache.processor;
 
 import com.alibaba.fastjson.JSONArray;
 import com.dev.tool.cache.model.RedisInfo;
+import com.dev.tool.common.model.ClassLoadFromConfig;
 import com.dev.tool.common.model.Event;
 import com.dev.tool.common.model.Result;
+import com.dev.tool.common.processor.AbstractClassSensitiveProcessor;
 import com.dev.tool.common.processor.AbstractProcessor;
 import com.dev.tool.common.util.*;
 import org.slf4j.Logger;
@@ -16,9 +18,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import java.util.*;
 
 /**
- * 工具主页控制器
+ * redis工具
  */
-public class RedisToolProcessor extends AbstractProcessor {
+public class RedisToolProcessor extends AbstractClassSensitiveProcessor {
 
     private Logger logger = LoggerFactory.getLogger(RedisToolProcessor.class);
 
@@ -102,10 +104,10 @@ public class RedisToolProcessor extends AbstractProcessor {
     }
 
     @Override
-    public Result reLoad(Event event) {
+    public Result refresh(Event event) {
         try {
             //1.重新加载class
-            Set<String> loadedClassSet =  ClassUtils.loadClassByPath(GroupEnum.CACHE,CLASS_DIR);
+            Set<String> loadedClassSet =  ClassUtils.loadClassByPath(GroupEnum.CACHE, CLASS_DIR);
             //2.重置缓存
             CacheUtils.destoryCacheClassLoadedSet();
             CacheUtils.getCacheClassLoadedSet().addAll(loadedClassSet);
@@ -121,7 +123,7 @@ public class RedisToolProcessor extends AbstractProcessor {
         try {
             String key = event.getEventData().get("key");
             String valueClass = event.getEventData().get("valueClass");
-            ContextUtils.getContext().setClazz(ClassUtils.forName(valueClass,ClassLoadUtils.getInstance(GroupEnum.CACHE)));
+            ContextUtils.getContext().setClazz(ClassUtils.forName(valueClass,Thread.currentThread().getContextClassLoader()));
             ContextUtils.getContext().setGroupEnum(GroupEnum.CACHE);
             Object o = null;
             //NONE("none"), STRING("string"), LIST("list"), SET("set"), ZSET("zset"), HASH("hash");
@@ -167,5 +169,15 @@ public class RedisToolProcessor extends AbstractProcessor {
 
     public void setOutClassSupply(boolean outClassSupply) {
         this.outClassSupply = outClassSupply;
+    }
+
+    @Override
+    public GroupToolEnum matchGroupToolEnum() {
+        return GroupToolEnum.REDIS;
+    }
+
+    @Override
+    public ClassLoadFromConfig classLoadFromConfig() {
+        return new ClassLoadFromConfig(ClassLoadFromEnum.LAOD_FROM_STRING,CLASS_DIR);
     }
 }

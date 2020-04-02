@@ -2,7 +2,6 @@ package com.dev.tool.config.configuration;
 
 import com.dev.tool.common.model.Tool;
 import com.dev.tool.common.util.GroupToolEnum;
-import com.dev.tool.config.initializer.ZookeeperToolInitializer;
 import com.dev.tool.config.processor.ZookeeperToolProcessor;
 import org.apache.zookeeper.ZooKeeper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -34,16 +33,9 @@ public class ZookeeperToolAutoConfiguration {
         return zookeeperToolProcessor;
     }
 
-    @Bean(name = "zookeeperToolInitializer")
-    public ZookeeperToolInitializer initzookeeperToolInitializer(ZookeeperToolProcessor processor) {
-        ZookeeperToolInitializer zookeeperToolInitializer = new ZookeeperToolInitializer();
-        zookeeperToolInitializer.setProcessor(processor);
-        return zookeeperToolInitializer;
-    }
-
     @Bean(name = "zookeeperTool")
-    public Tool initzookeeperTool(ZookeeperToolProcessor zookeeperToolProcessor, ZookeeperToolInitializer zookeeperToolInitializer) {
-        Tool tool = new Tool(GroupToolEnum.ZOOKEEPER, zookeeperToolProcessor, zookeeperToolInitializer);
+    public Tool initzookeeperTool(ZookeeperToolProcessor zookeeperToolProcessor) {
+        Tool tool = new Tool(GroupToolEnum.ZOOKEEPER, zookeeperToolProcessor);
         return tool;
     }
 

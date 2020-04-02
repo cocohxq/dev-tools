@@ -20,9 +20,9 @@ $(document).ready(function () {
 
 
             //配置渲染
-            $("#dubbo input[name='jarNameIncludeRulePattern']").attr("value",data.loadConfig.jarNameIncludeRulePattern);
-            if(data.loadConfig.jarNameExcludeRulePattern){
-                $("#dubbo input[name='jarNameExcludeRulePattern']").attr("value",data.loadConfig.jarNameExcludeRulePattern);
+            $("#dubbo input[name='artifactIdIncludeRulePattern']").attr("value",data.loadConfig.artifactIdIncludeRulePattern);
+            if(data.loadConfig.artifactIdExcludeRulePattern){
+                $("#dubbo input[name='artifactIdExcludeRulePattern']").attr("value",data.loadConfig.artifactIdExcludeRulePattern);
             }
             $("#dubbo input[name='classRulePattern']").attr("value",data.loadConfig.classRulePattern);
         }

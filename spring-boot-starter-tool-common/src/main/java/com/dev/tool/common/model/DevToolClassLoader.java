@@ -7,6 +7,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+/**
+ * 基于class文件的classLoader
+ */
 public class DevToolClassLoader extends ClassLoader {
 
     private String classPath;

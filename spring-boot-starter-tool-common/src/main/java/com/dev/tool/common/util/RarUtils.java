@@ -241,8 +241,8 @@ public class RarUtils {
             //从旧map中移除
             JarArtifactInfo oldJarArtifactInfo = oldJarMap.remove(newEntry.getKey());
             if(null != oldJarArtifactInfo){
-                //新jar包版本大于老的jar包，可以覆盖
-                if(newEntry.getValue().getVersion().compareTo(oldJarArtifactInfo.getVersion()) > 0){
+                //新jar包版本大于等于老的jar包，可以覆盖
+                if(newEntry.getValue().getVersion().compareTo(oldJarArtifactInfo.getVersion()) >= 0){
                     jarFileLoadInfo.getAddedJarFiles().add(newEntry.getValue());
                     jarFileLoadInfo.getRemainedJarFiles().add(newEntry.getValue());
                     jarFileLoadInfo.getOldRepeatRemovedJarFiles().add(oldJarArtifactInfo);
@@ -316,7 +316,7 @@ public class RarUtils {
      * @param targetDataPathKey
      * @return
      */
-    public static JarFileLoadInfo getExistedJarArtifact(JarFileLoadInfo jarFileLoadInfo,String targetDataPathKey){
+    public static JarFileLoadInfo loadRemainedJarArtifact(JarFileLoadInfo jarFileLoadInfo, String targetDataPathKey){
         File dir = new File(EnvUtil.getDataActualFilePath(jarFileLoadInfo.getGroupEnum(),targetDataPathKey));
         if(!dir.exists() || dir.listFiles().length == 0){
             return jarFileLoadInfo;
