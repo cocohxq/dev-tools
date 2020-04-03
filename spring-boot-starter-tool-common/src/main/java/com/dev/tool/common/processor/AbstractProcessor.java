@@ -22,7 +22,9 @@ public abstract class AbstractProcessor implements Processor, Initializer {
             event.setEventData(new HashMap<>());
             event.setGroupToolEnum(this.matchGroupToolEnum());
             event.setEventEnum(EventEnum.RELOAD);
-            this.process(event);
+            beforeInit(event);
+            process(event);
+            afterInit(event);
         } catch (Exception e) {
             logger.error(String.format("工具%s运行环境初始化异常", this.matchGroupToolEnum().getName()), e);
         }
@@ -123,4 +125,7 @@ public abstract class AbstractProcessor implements Processor, Initializer {
      */
     public void prepare(Event event){}
 
+    public void beforeInit(Event event){}
+
+    public void afterInit(Event event){}
 }

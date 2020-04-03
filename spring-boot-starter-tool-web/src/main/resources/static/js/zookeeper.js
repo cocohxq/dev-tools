@@ -1,20 +1,33 @@
+let nodes;
 $(document).ready(function () {
-    nodes = [{name: "/", path: "/", parentPath:"",spread: false}];
-    buildTree(nodes);
+
 });
+
+function zookeeperInit(){
+    nodes = [{title: "/",path: "/", parentPath:"",spread: false}];
+    buildTree(nodes);
+}
+
 
 function buildTree(nodes){
     $("#nodes").remove();
     $("#treeArea").append("<ul id=\"nodes\"></ul>");
 
-    layui.tree({
+    layui.tree.render({
         elem: '#nodes', //传入元素选择器
-        nodes: nodes,
+        data: nodes,
+        showLine: true,  //是否开启连接线
+        // onlyIconControl: true,  //是否仅允许节点左侧图标控制展开收缩
+        // accordion: true,
         click: function (node) {
-            loadZookeeperValue(node);
-            if(!node.children){
-                node.children = loadZookeeperChildren(node);
-                closeAndExpanse(node);
+            let data = node.data;
+            loadZookeeperValue(data);
+            if(!data.children){
+                data.children = loadZookeeperChildren(data);
+                //当前节点展开
+                if(data.children && data.children.length > 0){
+                    data.spread = true;
+                }
                 buildTree(nodes);
             }
         }
@@ -22,7 +35,7 @@ function buildTree(nodes){
 
 }
 
-function loadZookeeperValue(node) {
+function loadZookeeperValue(nodeData) {
     ajaxLoad({
         id:"zookeeper",
         eventName:"DATALOAD",
@@ -30,7 +43,7 @@ function loadZookeeperValue(node) {
         eventSource:"loadValue",
         addCookie:false,
         getValCallBack:function (param) {
-            param.path = node.path;
+            param.path = nodeData.path;
             return true;
         },
         sucCallback:function (data) {
@@ -41,7 +54,7 @@ function loadZookeeperValue(node) {
 
 
 
-function loadZookeeperChildren(node) {
+function loadZookeeperChildren(nodeData) {
     var children;
     ajaxLoad({
         id:"zookeeper",
@@ -51,7 +64,7 @@ function loadZookeeperChildren(node) {
         addCookie:false,
         async:false,
         getValCallBack:function (param) {
-            param.path = node.path;
+            param.path = nodeData.path;
             return true;
         },
         sucCallback:function (data) {
@@ -59,37 +72,5 @@ function loadZookeeperChildren(node) {
         }
     });
     return children;
-}
-
-
-function closeAndExpanse(node) {
-    closeChildren(nodes[0]);
-    expandChildren(nodes[0],node.path);
-}
-
-function closeChildren(rootNode) {
-    if(rootNode.children && rootNode.children.length > 0){
-        rootNode.spread = false;
-        rootNode.children.forEach(function (element) {
-            closeChildren(element);
-        });
-    }
-    return;
-
-
-}
-
-function expandChildren(rootNode,path) {
-    rootNode.spread=true;
-    if(rootNode.children && rootNode.children.length > 0){
-        rootNode.children.forEach(function (element) {
-            var reg = new RegExp("^"+element.path);
-            if(reg.test(path)){
-                element.spread = true;
-                expandChildren(element,path);
-            }
-        });
-    }
-    return;
 }
 

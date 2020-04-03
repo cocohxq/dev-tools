@@ -16,38 +16,49 @@ $(document).ready(function () {
     $(".layui-nav-child dd").unbind("click").bind('click',function () {
         var toolName = $(this).attr("toolName");
         $(".tool").hide();
-        $("#"+toolName).show();
-        //填充cookie
-        var dubboConfig = JSON.parse(getCookie(toolName+"_config"));
-        if(dubboConfig) {
-            $("#" + toolName + " input").each(function () {
-                $(this).val(dubboConfig[$(this).attr("name")]);
-            });
+        eval("reset('"+toolName+"')");//执行初始化
+        try{
+            eval(toolName+"Init()");//执行初始化
+        }catch(err){
+            console.info(toolName+"缺失初始化方法");
         }
+        $("#"+toolName).show();
+
+        //填充cookie
+        // var dubboConfig = JSON.parse(getCookie(toolName+"_config"));
+        // if(dubboConfig) {
+        //     $("#" + toolName + " input").each(function () {
+        //         $(this).val(dubboConfig[$(this).attr("name")]);
+        //     });
+        // }
     });
 
     //通用重置
     $(".reset").unbind("click").bind('click',function () {
         var parentId = $(this).parents(".tool").eq(0).attr("id");
-        $("#"+parentId+" input").each(function () {
-            $(this).val("");
-        });
-
-        $("#"+parentId+" textarea").each(function () {
-            $(this).val("");
-        });
-        $("#"+parentId+" select").each(function () {
-            $(this).val("");
-        });
-        layui.form.render('select');
+        reset(parentId);
     });
 
     $(".close").unbind("click").bind('click',function () {
         closeLayer();
     });
 
+
 });
 
+function reset(toolId) {
+    $("#"+toolId+" input").each(function () {
+        $(this).val("");
+    });
+
+    $("#"+toolId+" textarea").each(function () {
+        $(this).val("");
+    });
+    $("#"+toolId+" select").each(function () {
+        $(this).val("");
+    });
+    layui.form.render('select');
+}
 
 /**
  * 异步表单请求

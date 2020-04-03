@@ -1,11 +1,11 @@
 <div id="zookeeper" class="tool" style="display: none">
 
     <div id="form" class="layui-form">
-        <div id="treeArea" style="width: 300px;height:600px;float: left;display: inline;border: #adbaff solid 1px;overflow:auto;">
+        <div id="treeArea" style="width: 600px;height:800px;float: left;display: inline;border: #adbaff solid 1px;overflow:auto;overflow-x:scroll;">
             zk节点列表(单击展开):<br>
 
         </div>
-        <div style="margin-left:50px;width: 400px;height:600px;float: left;display: inline;border: #adbaff solid 1px;">
+        <div style="margin-left:50px;width: 400px;height:600px;float: left;display: inline;border: #adbaff solid 1px;overflow:auto;overflow-x:scroll;">
             节点对应值:
             <textarea id="valueArea" style="border: none;width: 100%;height: 100%;overflow:auto;"></textarea>
         </div>

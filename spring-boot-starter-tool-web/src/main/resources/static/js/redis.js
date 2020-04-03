@@ -1,4 +1,8 @@
 $(document).ready(function () {
+
+});
+
+function redisInit(){
     //加载db列表
     ajaxLoad({
         id:"redis",
@@ -29,7 +33,8 @@ $(document).ready(function () {
             layui.form.render('select');
         }
     });
-});
+}
+
 //添加依赖
 function addRef(obj) {
     let windowObj = $(obj).parents("#envContent:eq(0)");//window里面的内容是copy的，会出现id重复的问题，要通过这种方式来唯一定位

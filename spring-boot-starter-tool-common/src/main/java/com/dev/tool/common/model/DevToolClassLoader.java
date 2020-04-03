@@ -14,8 +14,8 @@ public class DevToolClassLoader extends ClassLoader {
 
     private String classPath;
 
-    public DevToolClassLoader(String classPath) {
-        super();
+    public DevToolClassLoader(String classPath,ClassLoader parent) {
+        super(parent);
         this.classPath = classPath;
     }
 

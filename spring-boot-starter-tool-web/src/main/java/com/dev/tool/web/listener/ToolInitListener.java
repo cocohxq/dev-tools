@@ -1,8 +1,6 @@
 package com.dev.tool.web.listener;
 
 import com.dev.tool.common.initializer.Initializer;
-import com.dev.tool.common.model.Tool;
-import com.dev.tool.common.processor.Processor;
 import com.dev.tool.common.util.ConstantUtils;
 import com.dev.tool.common.util.FileUtils;
 import com.dev.tool.common.util.GroupEnum;
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class ToolInitListener implements ApplicationListener<ContextRefreshedEvent> {

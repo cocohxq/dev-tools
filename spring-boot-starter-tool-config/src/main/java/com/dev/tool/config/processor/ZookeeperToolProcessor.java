@@ -10,6 +10,8 @@ import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +31,7 @@ public class ZookeeperToolProcessor extends AbstractProcessor {
     public Result pageLoad(Event event) {
         try {
             ZookeeperNode node = new ZookeeperNode();
-            node.setName(ROOT);
+            node.setTitle(ROOT);
             node.setPath(ROOT);
 
             return ResultUtils.successResult(Arrays.asList(node));
@@ -71,7 +73,11 @@ public class ZookeeperToolProcessor extends AbstractProcessor {
                 nodes = children.stream().collect(ArrayList::new,
                         (list,str)->{
                             ZookeeperNode node = new ZookeeperNode();
-                            node.setName(str);
+                            String title = str;
+                            try{
+                                title = URLDecoder.decode(str,"UTF-8");
+                            }catch (Exception e1){logger.error("转码异常",e1);}
+                            node.setTitle(title);
                             node.setSpread(false);
                             if(!path.equals(ROOT)){
                                 node.setPath(path+"/"+str);
@@ -88,19 +94,6 @@ public class ZookeeperToolProcessor extends AbstractProcessor {
         }
     }
 
-
-
-
-    @Override
-    public Result before(Event event) {
-        return ResultUtils.successResult(null);
-    }
-
-    @Override
-    public Result finish(Event event, Result result) {
-        return result;
-    }
-
     public ZooKeeper getZooKeeper() {
         return zooKeeper;
     }
@@ -113,7 +106,7 @@ public class ZookeeperToolProcessor extends AbstractProcessor {
     private String getZkValue(String path) throws Exception {
         byte[] data = zooKeeper.getData(path, false, null);
         if (null != data) {
-            return new String(data);
+            return URLDecoder.decode(new String(data), "UTF-8");
         } else {
             return "";
         }

@@ -1,34 +1,4 @@
 $(document).ready(function () {
-    //加载db列表
-    ajaxLoad({
-        id:"dubbo",
-        eventName:"PAGELOAD",
-        toolName:"dubbo",
-        eventSource:"init",
-        addCookie:false,
-        getValCallBack:function (param) {
-            return true;
-        },
-        sucCallback:function (data) {
-            //下拉框渲染
-            $("#dubbo select[name='jarName'] option").remove();
-            $("#dubbo select[name='jarName']").append('<option value="-1">请选择</option>');
-            for(var i=0;i<data.jarInfos.length;i++){
-                $("#dubbo select[name='jarName']").append('<option value="'+data.jarInfos[i]+'">'+data.jarInfos[i]+'</option>');
-            }
-            layui.form.render('select');
-
-
-            //配置渲染
-            $("#dubbo input[name='artifactIdIncludeRulePattern']").attr("value",data.loadConfig.artifactIdIncludeRulePattern);
-            if(data.loadConfig.artifactIdExcludeRulePattern){
-                $("#dubbo input[name='artifactIdExcludeRulePattern']").attr("value",data.loadConfig.artifactIdExcludeRulePattern);
-            }
-            $("#dubbo input[name='classRulePattern']").attr("value",data.loadConfig.classRulePattern);
-        }
-    });
-
-
     //dubbo执行结果
     $("#dubbo .submit").unbind("click").bind('click',function () {
         ajaxLoad({
@@ -74,6 +44,37 @@ $(document).ready(function () {
 
 });
 
+
+function dubboInit(){
+    //加载db列表
+    ajaxLoad({
+        id:"dubbo",
+        eventName:"PAGELOAD",
+        toolName:"dubbo",
+        eventSource:"init",
+        addCookie:false,
+        getValCallBack:function (param) {
+            return true;
+        },
+        sucCallback:function (data) {
+            //下拉框渲染
+            $("#dubbo select[name='jarName'] option").remove();
+            $("#dubbo select[name='jarName']").append('<option value="-1">请选择</option>');
+            for(var i=0;i<data.jarInfos.length;i++){
+                $("#dubbo select[name='jarName']").append('<option value="'+data.jarInfos[i]+'">'+data.jarInfos[i]+'</option>');
+            }
+            layui.form.render('select');
+
+
+            //配置渲染
+            $("#dubbo input[name='artifactIdIncludeRulePattern']").attr("value",data.loadConfig.artifactIdIncludeRulePattern);
+            if(data.loadConfig.artifactIdExcludeRulePattern){
+                $("#dubbo input[name='artifactIdExcludeRulePattern']").attr("value",data.loadConfig.artifactIdExcludeRulePattern);
+            }
+            $("#dubbo input[name='classRulePattern']").attr("value",data.loadConfig.classRulePattern);
+        }
+    });
+}
 
 function reload() {
     ajaxLoad({

@@ -17,7 +17,7 @@ public class ClassLoaderUtils {
         return (T)classLoaderMap.get(groupEnum);
     }
 
-    public static ClassLoader initAndGetDevToolClassLoader(GroupEnum groupEnum, String classPath) {
+    public static ClassLoader initAndGetDevToolClassLoader(GroupEnum groupEnum, String classPath,ClassLoader parent) {
         if (null == groupEnum) {
             throw new RuntimeException("工具组枚举不可以为空");
         }
@@ -26,12 +26,12 @@ public class ClassLoaderUtils {
             throw new RuntimeException("类文件路径不可以为空");
         }
         synchronized (DevToolClassLoader.class) {
-            classLoaderMap.put(groupEnum, new DevToolClassLoader(classFilePath));
+            classLoaderMap.put(groupEnum, new DevToolClassLoader(classFilePath,parent));
         }
         return classLoaderMap.get(groupEnum);
     }
 
-    public static ClassLoader initAndGetURLClassLoader(GroupEnum groupEnum, URL[] urls) {
+    public static ClassLoader initAndGetURLClassLoader(GroupEnum groupEnum, URL[] urls,ClassLoader parent) {
         if (null == groupEnum) {
             throw new RuntimeException("工具组枚举不可以为空");
         }
@@ -39,7 +39,7 @@ public class ClassLoaderUtils {
             throw new RuntimeException("urls不可以为空");
         }
         synchronized (DevToolClassLoader.class) {
-            URLClassLoader urlClassLoader = new URLClassLoader(urls);
+            URLClassLoader urlClassLoader = new URLClassLoader(urls,parent);
             URLClassLoader oldURLClassLoader = (URLClassLoader)classLoaderMap.put(groupEnum, urlClassLoader);
             if(null != oldURLClassLoader){
                 try {

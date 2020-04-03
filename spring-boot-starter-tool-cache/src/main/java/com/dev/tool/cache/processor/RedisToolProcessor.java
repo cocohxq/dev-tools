@@ -6,13 +6,14 @@ import com.dev.tool.common.model.ClassLoadFromConfig;
 import com.dev.tool.common.model.Event;
 import com.dev.tool.common.model.Result;
 import com.dev.tool.common.processor.AbstractClassSensitiveProcessor;
-import com.dev.tool.common.processor.AbstractProcessor;
 import com.dev.tool.common.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisConnectionUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.*;
@@ -29,7 +30,6 @@ public class RedisToolProcessor extends AbstractClassSensitiveProcessor {
     private final String CLASS_DIR = "classes";
 
     private boolean outClassSupply=false;//是否需要外部class来支持序列化，反序列化
-
 
     @Override
     public synchronized Result before(Event event) {
@@ -48,15 +48,18 @@ public class RedisToolProcessor extends AbstractClassSensitiveProcessor {
 
     @Override
     public synchronized Result pageLoad(Event event) {
-        RedisConnection cn = redisTemplate.getConnectionFactory().getConnection();
+        RedisConnection cn = null;
         try {
+            cn = getConnection(redisTemplate.getConnectionFactory());
             Properties properties = cn.info();
             Map<String,Object> map = new HashMap<>();
             map.put("redisInfo",new RedisInfo(properties));
             map.put("outClassSupply",outClassSupply);
             map.put("classes",CacheUtils.getCacheClassLoadedSet());
             return ResultUtils.successResult(map);
-        } finally {
+        } catch (Exception e){
+            return ResultUtils.errorResult(e.getMessage());
+        }finally {
             if (null != cn) {
                 cn.close();
             }
@@ -179,5 +182,15 @@ public class RedisToolProcessor extends AbstractClassSensitiveProcessor {
     @Override
     public ClassLoadFromConfig classLoadFromConfig() {
         return new ClassLoadFromConfig(ClassLoadFromEnum.LAOD_FROM_STRING,CLASS_DIR);
+    }
+
+    /**
+     * RedisConnection是懒加载的，需要在jvm原始类加载器中初始化加载一下，后面其它自定义classLoader就可以使用 （双亲委派可以发现class）
+     * @param connectionFactory
+     * @return
+     * @throws Exception
+     */
+    private RedisConnection getConnection(RedisConnectionFactory connectionFactory) throws Exception{
+        return executeWithAppClassLoader(()->RedisConnectionUtils.getConnection(connectionFactory));
     }
 }

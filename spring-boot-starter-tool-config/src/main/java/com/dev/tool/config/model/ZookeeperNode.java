@@ -3,7 +3,7 @@ package com.dev.tool.config.model;
 import java.util.List;
 
 public class ZookeeperNode {
-    private String name;
+    private String title;
     private String value;
     private boolean spread;
     private String path;
@@ -13,8 +13,8 @@ public class ZookeeperNode {
     public ZookeeperNode() {
     }
 
-    public ZookeeperNode(String name, String value, boolean spread, String path, String parentPath, List<ZookeeperNode> children) {
-        this.name = name;
+    public ZookeeperNode(String title, String value, boolean spread, String path, String parentPath, List<ZookeeperNode> children) {
+        this.title = title;
         this.value = value;
         this.spread = spread;
         this.path = path;
@@ -22,12 +22,12 @@ public class ZookeeperNode {
         this.children = children;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getValue() {
