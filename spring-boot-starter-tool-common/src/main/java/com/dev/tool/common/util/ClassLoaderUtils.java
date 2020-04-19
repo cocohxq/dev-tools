@@ -10,29 +10,29 @@ import java.util.Map;
 
 public class ClassLoaderUtils {
 
-    private static Map<GroupEnum, ClassLoader> classLoaderMap = new HashMap<>();
+    private static Map<GroupToolEnum, ClassLoader> classLoaderMap = new HashMap<>();
 
 
-    public static < T extends ClassLoader> T getClassLoader(GroupEnum groupEnum) {
-        return (T)classLoaderMap.get(groupEnum);
+    public static < T extends ClassLoader> T getClassLoader(GroupToolEnum groupToolEnum) {
+        return (T)classLoaderMap.get(groupToolEnum);
     }
 
-    public static ClassLoader initAndGetDevToolClassLoader(GroupEnum groupEnum, String classPath,ClassLoader parent) {
-        if (null == groupEnum) {
+    public static ClassLoader initAndGetDevToolClassLoader(GroupToolEnum groupToolEnum, String classPath,ClassLoader parent) {
+        if (null == groupToolEnum) {
             throw new RuntimeException("工具组枚举不可以为空");
         }
-        String classFilePath = EnvUtil.getDataActualFilePath(groupEnum, classPath);
+        String classFilePath = EnvUtil.getDataActualFilePath(groupToolEnum, classPath);
         if (null == classFilePath) {
             throw new RuntimeException("类文件路径不可以为空");
         }
         synchronized (DevToolClassLoader.class) {
-            classLoaderMap.put(groupEnum, new DevToolClassLoader(classFilePath,parent));
+            classLoaderMap.put(groupToolEnum, new DevToolClassLoader(classFilePath,parent));
         }
-        return classLoaderMap.get(groupEnum);
+        return classLoaderMap.get(groupToolEnum);
     }
 
-    public static ClassLoader initAndGetURLClassLoader(GroupEnum groupEnum, URL[] urls,ClassLoader parent) {
-        if (null == groupEnum) {
+    public static ClassLoader initAndGetURLClassLoader(GroupToolEnum groupToolEnum, URL[] urls,ClassLoader parent) {
+        if (null == groupToolEnum) {
             throw new RuntimeException("工具组枚举不可以为空");
         }
         if (null == urls) {
@@ -40,7 +40,7 @@ public class ClassLoaderUtils {
         }
         synchronized (DevToolClassLoader.class) {
             URLClassLoader urlClassLoader = new URLClassLoader(urls,parent);
-            URLClassLoader oldURLClassLoader = (URLClassLoader)classLoaderMap.put(groupEnum, urlClassLoader);
+            URLClassLoader oldURLClassLoader = (URLClassLoader)classLoaderMap.put(groupToolEnum, urlClassLoader);
             if(null != oldURLClassLoader){
                 try {
                     oldURLClassLoader.close();
@@ -49,6 +49,6 @@ public class ClassLoaderUtils {
                 }
             }
         }
-        return classLoaderMap.get(groupEnum);
+        return classLoaderMap.get(groupToolEnum);
     }
 }

@@ -32,13 +32,13 @@ public abstract class AbstractClassSensitiveProcessor extends AbstractProcessor 
             ClassLoadFromConfig classLoadFromConfig = classLoadFromConfig();
             switch (classLoadFromConfig.getClassLoadFromEnum()) {
                 case LOAD_FROM_JAR:
-                    return ClassLoaderUtils.initAndGetURLClassLoader(matchGroupToolEnum().getGroupEnum(), classLoadFromConfig.getUrls(), appClassLoader);
+                    return ClassLoaderUtils.initAndGetURLClassLoader(matchGroupToolEnum(), classLoadFromConfig.getUrls(), appClassLoader);
                 case LAOD_FROM_STRING:
                 case LAOD_FROM_TEXTFILE:
-                    return ClassLoaderUtils.initAndGetDevToolClassLoader(matchGroupToolEnum().getGroupEnum(), classLoadFromConfig.getClassPath(), appClassLoader);
+                    return ClassLoaderUtils.initAndGetDevToolClassLoader(matchGroupToolEnum(), classLoadFromConfig.getClassPath(), appClassLoader);
             }
         }
-        return ClassLoaderUtils.getClassLoader(matchGroupToolEnum().getGroupEnum());
+        return ClassLoaderUtils.getClassLoader(matchGroupToolEnum());
     }
 
     public abstract ClassLoadFromConfig classLoadFromConfig();

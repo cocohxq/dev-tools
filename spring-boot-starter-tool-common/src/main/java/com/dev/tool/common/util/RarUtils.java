@@ -4,7 +4,6 @@ import com.dev.tool.common.model.JarArtifactInfo;
 import com.dev.tool.common.model.JarFileLoadInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -13,7 +12,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -83,7 +81,7 @@ public class RarUtils {
             }
 
             //3.移动到临时目录
-            tmpPath = FileUtils.createDirs(FileUtils.concatPath(EnvUtil.getDataActualFilePath(jarFileLoadInfo.getGroupEnum()),TMP_DIR),false);
+            tmpPath = FileUtils.createDirs(FileUtils.concatPath(EnvUtil.getDataActualFilePath(jarFileLoadInfo.getGroupToolEnum()), TMP_DIR), false);
             List<JarFile> jarFiles = new ArrayList<>();
             for(File file : rarFiles){
                 JarFile jarFile = new JarFile(file.getPath());
@@ -96,14 +94,14 @@ public class RarUtils {
             }
 
             //4.跟历史已经存在的jar包进行合并存储，返回重复的包和
-            List<File> files = EnvUtil.getDataFileList(jarFileLoadInfo.getGroupEnum(),targetDataPathKey);
-            List<JarFile> oldJarFiles = files.stream().collect(ArrayList::new,(list,file)->{
+            List<File> files = EnvUtil.getDataFileList(jarFileLoadInfo.getGroupToolEnum(), targetDataPathKey);
+            List<JarFile> oldJarFiles = files.stream().collect(ArrayList::new, (list, file) -> {
                 try {
                     list.add(new JarFile(file.getPath()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            },(list1, list2)->list1.addAll(list2));
+            }, (list1, list2) -> list1.addAll(list2));
 
             //5.按版本合并
             mergeJarFiles(jarFiles,oldJarFiles,jarFileLoadInfo);
@@ -317,7 +315,7 @@ public class RarUtils {
      * @return
      */
     public static JarFileLoadInfo loadRemainedJarArtifact(JarFileLoadInfo jarFileLoadInfo, String targetDataPathKey){
-        File dir = new File(EnvUtil.getDataActualFilePath(jarFileLoadInfo.getGroupEnum(),targetDataPathKey));
+        File dir = new File(EnvUtil.getDataActualFilePath(jarFileLoadInfo.getGroupToolEnum(), targetDataPathKey));
         if(!dir.exists() || dir.listFiles().length == 0){
             return jarFileLoadInfo;
         }
@@ -352,7 +350,7 @@ public class RarUtils {
         jarFileLoadInfo.getOldRepeatRemovedJarFiles().stream().forEach(l->FileUtils.delete(l.getJarFile().getName()));
         //增加新的
         List<File> fileList = jarFileLoadInfo.getAddedJarFiles().stream().collect(ArrayList::new,(list,j)->list.add(new File(j.getJarFile().getName())),(l1,l2)->l1.addAll(l2));
-        EnvUtil.updateDatas(jarFileLoadInfo.getGroupEnum(),targetDataPathKey,fileList,true);
+        EnvUtil.updateDatas(jarFileLoadInfo.getGroupToolEnum(), targetDataPathKey, fileList, true);
         return jarFileLoadInfo;
     }
 

@@ -7,44 +7,64 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class EnvUtil {
     private static Logger logger = LoggerFactory.getLogger(EnvUtil.class);
 
+    private static final Map<GroupToolEnum, String> groupToolDataDirPathMap = new HashMap<>();
+    private static final Map<GroupToolEnum, String> groupToolConfigDirPathMap = new HashMap<>();
+
     private final static String CFG_SUFFIX = ".cfg";
 
-    public static boolean updateConfig(GroupEnum group, String key, Object data, boolean insertIfAbsent) {
+
+    public static void init() {
+        synchronized (EnvUtil.class) {
+            //把相应的工具配置和数据文件夹建起来
+            Arrays.stream(GroupToolEnum.values()).forEach(l -> {
+                String dataPath = FileUtils.concatPath(ConstantUtils.getDataPath(), l.getGroupEnum().name(), l.toString());
+                String configPath = FileUtils.concatPath(ConstantUtils.getConfigPath(), l.getGroupEnum().name(), l.toString());
+                new File(dataPath).mkdirs();
+                new File(configPath).mkdirs();
+                groupToolDataDirPathMap.put(l, dataPath);
+                groupToolConfigDirPathMap.put(l, configPath);
+            });
+        }
+    }
+
+    public static boolean updateConfig(GroupToolEnum groupTool, String key, Object data, boolean insertIfAbsent) {
         try {
-            FileUtils.updateFileContent(FileUtils.concatPath(ConstantUtils.getConfigPath(), group.toString(), generateCfgKey(key)), JSONObject.toJSONString(data), insertIfAbsent);
+            FileUtils.updateFileContent(FileUtils.concatPath(groupToolConfigDirPathMap.get(groupTool), generateCfgKey(key)), JSONObject.toJSONString(data), insertIfAbsent);
             return true;
         } catch (Exception e) {
-            logger.error("更新配置异常,key:"+key,e);
+            logger.error("更新配置异常,key:" + key, e);
             return false;
         }
     }
 
-    public static boolean saveConfig(GroupEnum group, String key, Object data) {
+    public static boolean saveConfig(GroupToolEnum groupTool, String key, Object data) {
         try {
-            FileUtils.writeFileContent(FileUtils.concatPath(ConstantUtils.getConfigPath(), group.toString(), generateCfgKey(key)), JSONObject.toJSONString(data));
+            FileUtils.writeFileContent(FileUtils.concatPath(groupToolConfigDirPathMap.get(groupTool), generateCfgKey(key)), JSONObject.toJSONString(data));
             return true;
         } catch (Exception e) {
-            logger.error("保存配置异常,key:"+key,e);
+            logger.error("保存配置异常,key:" + key, e);
             return false;
         }
     }
 
 
-    public static <T> T getConfig(GroupEnum group, String key, Class<T> clazz) {
+    public static <T> T getConfig(GroupToolEnum groupTool, String key, Class<T> clazz) {
         try {
-            String info = FileUtils.readFileContent(FileUtils.concatPath(ConstantUtils.getConfigPath(), group.toString(), generateCfgKey(key)));
+            String info = FileUtils.readFileContent(FileUtils.concatPath(groupToolConfigDirPathMap.get(groupTool), generateCfgKey(key)));
             if (null == info) {
                 return null;
             }
             return JSONObject.parseObject(info, clazz);
         } catch (Exception e) {
-            logger.error("获取配置异常,key:"+key,e);
+            logger.error("获取配置异常,key:" + key, e);
             return null;
         }
     }
@@ -64,15 +84,15 @@ public class EnvUtil {
         }
     }
 
-    public static List<String> getConfigNameList(GroupEnum group) {
+    public static List<String> getConfigNameList(GroupToolEnum groupTool) {
         try {
-            File configDir = new File(ConstantUtils.getConfigPath(), group.toString());
+            File configDir = new File(groupToolConfigDirPathMap.get(groupTool));
             if (!configDir.exists()) {
                 return new ArrayList<>();
             }
             return Arrays.asList(configDir.listFiles()).stream().filter(f -> !f.isHidden() && f.isFile()).map(f -> generateKey(f.getName())).collect(Collectors.toList());
         } catch (Exception e) {
-            logger.error("获取配置列表异常",e);
+            logger.error("获取配置列表异常", e);
             return null;
         }
     }
@@ -86,74 +106,73 @@ public class EnvUtil {
     }
 
 
-
-    public static boolean isDataExists(GroupEnum group, String pathKey) {
+    public static boolean isDataExists(GroupToolEnum groupTool, String pathKey) {
         try {
-            return FileUtils.isFileExists(FileUtils.concatPath(ConstantUtils.getDataPath(), group.toString(), pathKey));
+            return FileUtils.isFileExists(FileUtils.concatPath(groupToolDataDirPathMap.get(groupTool), pathKey));
         } catch (Exception e) {
-            logger.error("判断配置是否存在异常,key:"+pathKey,e);
+            logger.error("判断配置是否存在异常,key:" + pathKey, e);
             return false;
         }
     }
 
-    public static boolean updateDatas(GroupEnum group, String pathKey, List<File> datas, boolean insertIfAbsent) {
+    public static boolean updateDatas(GroupToolEnum groupTool, String pathKey, List<File> datas, boolean insertIfAbsent) {
         try {
-            FileUtils.updateFiles(FileUtils.concatPath(ConstantUtils.getDataPath(), group.toString(), pathKey),datas , insertIfAbsent);
+            FileUtils.updateFiles(FileUtils.concatPath(groupToolDataDirPathMap.get(groupTool), pathKey), datas, insertIfAbsent);
             return true;
         } catch (Exception e) {
-            logger.error("更新配置异常,key:"+pathKey,e);
+            logger.error("更新配置异常,key:" + pathKey, e);
             return false;
         }
     }
 
-    public static List<File> getDataFileList(GroupEnum group,String pathKey) {
+    public static List<File> getDataFileList(GroupToolEnum groupTool, String pathKey) {
         try {
-            File dataDir = new File(FileUtils.concatPath(ConstantUtils.getDataPath(), group.toString(),pathKey));
+            File dataDir = new File(FileUtils.concatPath(groupToolDataDirPathMap.get(groupTool), pathKey));
             if (!dataDir.exists()) {
                 return new ArrayList<>();
             }
             return Arrays.asList(dataDir.listFiles()).stream().filter(f -> !f.isHidden()).collect(Collectors.toList());
         } catch (Exception e) {
-            logger.error("获取配置列表异常",e);
+            logger.error("获取配置列表异常", e);
             return null;
         }
     }
 
-    public static List<String> getDataNameList(GroupEnum group,String pathKey) {
+    public static List<String> getDataNameList(GroupToolEnum groupTool, String pathKey) {
         try {
-            File dataDir = new File(FileUtils.concatPath(ConstantUtils.getDataPath(), group.toString(),pathKey));
+            File dataDir = new File(FileUtils.concatPath(groupToolDataDirPathMap.get(groupTool), pathKey));
             if (!dataDir.exists()) {
                 return new ArrayList<>();
             }
             return Arrays.asList(dataDir.listFiles()).stream().filter(f -> !f.isHidden()).map(f -> f.getName()).collect(Collectors.toList());
         } catch (Exception e) {
-            logger.error("获取配置列表异常",e);
+            logger.error("获取配置列表异常", e);
             return null;
         }
     }
 
-    public static File getData(GroupEnum group, String pathKey) {
+    public static File getData(GroupToolEnum groupTool, String pathKey) {
         try {
-            return new File(FileUtils.readFileContent(FileUtils.concatPath(ConstantUtils.getDataPath(), group.toString(), pathKey)));
+            return new File(FileUtils.readFileContent(FileUtils.concatPath(groupToolDataDirPathMap.get(groupTool), pathKey)));
         } catch (Exception e) {
-            logger.error("获取配置异常,key:"+pathKey,e);
+            logger.error("获取配置异常,key:" + pathKey, e);
             return null;
         }
     }
 
-    public static String getDataActualFilePath(GroupEnum group) {
+    public static String getDataActualFilePath(GroupToolEnum groupTool) {
         try {
-            return FileUtils.concatPath(ConstantUtils.getDataPath(), group.toString());
+            return groupToolDataDirPathMap.get(groupTool);
         } catch (Exception e) {
             return null;
         }
     }
 
-    public static String getDataActualFilePath(GroupEnum group, String pathKey) {
+    public static String getDataActualFilePath(GroupToolEnum groupTool, String pathKey) {
         try {
-            return FileUtils.concatPath(ConstantUtils.getDataPath(), group.toString(), pathKey);
+            return FileUtils.concatPath(groupToolDataDirPathMap.get(groupTool), pathKey);
         } catch (Exception e) {
-            logger.error("获取实际路径异常,key:"+pathKey,e);
+            logger.error("获取实际路径异常,key:" + pathKey, e);
             return null;
         }
     }

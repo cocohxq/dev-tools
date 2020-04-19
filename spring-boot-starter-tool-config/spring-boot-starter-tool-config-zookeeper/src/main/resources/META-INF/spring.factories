@@ -1,0 +1,1 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.dev.tool.config.zookeeper.configuration.ZookeeperToolAutoConfiguration

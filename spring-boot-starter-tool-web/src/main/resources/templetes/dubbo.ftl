@@ -74,13 +74,13 @@
     <div id="config" style="display:none;padding-top:10px">
         <div id="configContent">
             <div class="layui-form-item dubbo">
-                <label class="layui-form-label" style="width: 20%"><span class="star">*</span>jar的artifactId解析规则(正则)</label>
+                <label class="layui-form-label" style="width: 60%;text-align: left"><span class="star">*</span>artifactId正则解析规则(符合artifactId+version+.jar的jar会参与解析接口)</label>
             </div>
             <div class="layui-form-item dubbo">
-                <div class="layui-inline" style="width: 100%">
-                    <label class="layui-form-label"><span class="star">*</span>include:</label>
+                <div class="layui-inline" style="width: 100%;">
+                    <label class="layui-form-label" style="text-align: left"><span class="star">*</span>include:</label>
                     <div class="layui-input-inline" style="width: 30%">
-                        <input type="text" name="artifactIdIncludeRulePattern" lay-verify="required" autocomplete="off" placeholder="*(-api|-client).*.jar" class="layui-input" value="">
+                        <input type="text" name="artifactIdIncludeRulePattern" lay-verify="required" autocomplete="off" placeholder="*(-api|-client)" class="layui-input" value="">
                     </div>
 
                     <label class="layui-form-label">exclude:</label>
@@ -91,11 +91,11 @@
             </div>
 
             <div class="layui-form-item dubbo">
-                <label class="layui-form-label" style="width: 17%"><span class="star">*</span>接口类名规则(正则)</label>
+                <label class="layui-form-label" style="width: 20%;text-align: left"><span class="star">*</span>接口类名正则解析规则</label>
             </div>
             <div class="layui-form-item dubbo">
                 <div class="layui-inline" style="width: 100%">
-                    <label class="layui-form-label"><span class="star">*</span>include:</label>
+                    <label class="layui-form-label" style="text-align: left"><span class="star">*</span>include:</label>
                     <div class="layui-input-inline" style="width: 80%">
                         <input type="text" name="classRulePattern" lay-verify="required" autocomplete="off" placeholder=".*service" class="layui-input" value="">
                     </div>

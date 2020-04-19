@@ -10,6 +10,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>spring-boot-starter-tool-config</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>spring-boot-starter-tool-config-zookeeper</module>
+    </modules>
 
 
     <dependencies>
@@ -35,24 +39,6 @@
             <artifactId>spring-boot-starter-tool-auth</artifactId>
             <version>${tool.version}</version>
         </dependency>
-
-
-        <dependency>
-            <groupId>org.apache.zookeeper</groupId>
-            <artifactId>zookeeper</artifactId>
-            <version>3.4.14</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-log4j12</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
     </dependencies>
 
 

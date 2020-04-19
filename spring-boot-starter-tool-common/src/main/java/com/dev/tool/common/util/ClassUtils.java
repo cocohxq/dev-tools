@@ -219,9 +219,9 @@ public class ClassUtils {
      *
      * @throws Exception
      */
-    public static Set<String> loadClassByPath(GroupEnum groupEnum, String targetDataPathKey) throws Exception {
+    public static Set<String> loadClassByPath(GroupToolEnum groupToolEnum, String targetDataPathKey) throws Exception {
         List<String> classNameList = new ArrayList<>();
-        String classFilePath = EnvUtil.getDataActualFilePath(groupEnum, targetDataPathKey);
+        String classFilePath = EnvUtil.getDataActualFilePath(groupToolEnum, targetDataPathKey);
         File file = new File(classFilePath);
         if (file.isDirectory()) {
             for (File classfile : file.listFiles()) {

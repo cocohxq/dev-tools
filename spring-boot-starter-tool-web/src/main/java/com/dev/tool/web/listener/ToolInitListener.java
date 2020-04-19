@@ -2,8 +2,10 @@ package com.dev.tool.web.listener;
 
 import com.dev.tool.common.initializer.Initializer;
 import com.dev.tool.common.util.ConstantUtils;
+import com.dev.tool.common.util.EnvUtil;
 import com.dev.tool.common.util.FileUtils;
 import com.dev.tool.common.util.GroupEnum;
+import com.dev.tool.common.util.GroupToolEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -50,8 +52,7 @@ public class ToolInitListener implements ApplicationListener<ContextRefreshedEve
             ConstantUtils.initConfigPath(FileUtils.concatPath(running_path, "config"));
             ConstantUtils.initDataPath(FileUtils.concatPath(running_path, "data"));
             //把相应的工具配置和数据文件夹建起来
-            Arrays.stream(GroupEnum.values()).forEach(l -> new File(FileUtils.concatPath(ConstantUtils.getConfigPath(), l.toString())).mkdirs());
-            Arrays.stream(GroupEnum.values()).forEach(l -> new File(FileUtils.concatPath(ConstantUtils.getDataPath(), l.toString())).mkdirs());
+            EnvUtil.init();
         } catch (Exception e) {
             logger.error("initEnv启动初始化Env执行异常");
         }

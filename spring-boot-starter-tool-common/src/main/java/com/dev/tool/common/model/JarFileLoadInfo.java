@@ -1,13 +1,14 @@
 package com.dev.tool.common.model;
 
 import com.dev.tool.common.util.GroupEnum;
+import com.dev.tool.common.util.GroupToolEnum;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class JarFileLoadInfo {
 
-    private GroupEnum groupEnum;
+    private GroupToolEnum groupToolEnum;
 
     private List<JarArtifactInfo> newJarFiles = new ArrayList<>();
     private List<JarArtifactInfo> oldJarFiles = new ArrayList<>();
@@ -32,8 +33,8 @@ public class JarFileLoadInfo {
     public JarFileLoadInfo() {
     }
 
-    public JarFileLoadInfo(GroupEnum groupEnum) {
-        this.groupEnum = groupEnum;
+    public JarFileLoadInfo(GroupToolEnum groupToolEnum) {
+        this.groupToolEnum = groupToolEnum;
     }
 
     public List<JarArtifactInfo> getNewJarFiles() {
@@ -117,11 +118,11 @@ public class JarFileLoadInfo {
         this.finalLoadedJarInfos = finalLoadedJarInfos;
     }
 
-    public GroupEnum getGroupEnum() {
-        return groupEnum;
+    public GroupToolEnum getGroupToolEnum() {
+        return groupToolEnum;
     }
 
-    public void setGroupEnum(GroupEnum groupEnum) {
-        this.groupEnum = groupEnum;
+    public void setGroupToolEnum(GroupToolEnum groupToolEnum) {
+        this.groupToolEnum = groupToolEnum;
     }
 }
