@@ -1,7 +1,7 @@
 $(document).ready(function () {
-
 });
 
+//菜单切换时调用
 function redisInit(){
     //加载db列表
     ajaxLoad({
@@ -20,7 +20,7 @@ function redisInit(){
                 $("#redis select[name='dbIndex']").append('<option value="'+data.redisInfo.dbList[i]+'">'+data.redisInfo.dbList[i]+'</option>');
             }
 
-            if(data.outClassSupply){
+            if(data.notJdkClassSupport){
                 $("#redis select[name='classes'] option").remove();
                 $("#redis select[name='classes']").append('<option value="-1">请选择</option>');
                 for(var i=0;i<data.classes.length;i++){
@@ -152,7 +152,7 @@ function commit() {
             }
             param.dbIndex = dbIndex;
             param.key=key;
-            param.value=$("#redis #result").val();
+            param.value=$("#redis #value").val();
             param.valueClass=$("#redis input[name='valueClass']").val();
             let sltclass = $("#redis select[name='classes']").val();
             if(sltclass && sltclass != "-1"){

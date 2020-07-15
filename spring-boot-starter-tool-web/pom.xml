@@ -16,12 +16,12 @@
     <dependencies>
 
 
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-freemarker</artifactId>
         </dependency>
 
+        <!-- starter 扩展 start-->
         <dependency>
             <groupId>com.dev.tool</groupId>
             <artifactId>spring-boot-starter-tool-auth</artifactId>
@@ -46,7 +46,13 @@
             <version>${tool.version}</version>
         </dependency>
 
-        <!-- spi 扩展 end-->
+        <dependency>
+            <groupId>com.dev.tool</groupId>
+            <artifactId>spring-boot-starter-tool-jms-rocketmq</artifactId>
+            <version>${tool.version}</version>
+        </dependency>
+
+        <!-- starter 扩展 end-->
     </dependencies>
 
 </project>

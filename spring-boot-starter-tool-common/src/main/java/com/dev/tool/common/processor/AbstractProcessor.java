@@ -35,6 +35,7 @@ public abstract class AbstractProcessor implements Processor, Initializer {
      *
      * @return
      */
+    @Override
     public Result process(Event event) {
         Result result = null;
         try {

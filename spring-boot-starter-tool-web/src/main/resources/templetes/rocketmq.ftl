@@ -1,32 +1,18 @@
-<div id="redis" class="tool" style="display: none">
+<div id="rocketmq" class="tool" style="display: none">
 
     <div id="form" class="layui-form">
+
         <div class="layui-form-item">
-            <label class="layui-form-label"><span class="star">*</span>db</label></label>
+            <label class="layui-form-label"><span class="star">*</span>topic</label>
             <div class="layui-input-block">
-                <select name="dbIndex" lay-filter="dbIndex">
-                </select>
+                <input type="text" name="topic" autocomplete="off" placeholder="topic" class="layui-input">
             </div>
         </div>
 
         <div class="layui-form-item">
-            <label class="layui-form-label"><span class="star">*</span>key搜索</label>
+            <label class="layui-form-label">tags</label>
             <div class="layui-input-block">
-                <input type="text" name="keyStr" autocomplete="off" placeholder="支持通配：如*web*" class="layui-input">
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <div class="layui-input-block">
-                <button onclick="loadRedisParam(this)" type="reset" class="layui-btn layui-btn-primary">过滤key</button>
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label"><span class="star">*</span>key列表</label></label>
-            <div class="layui-input-block">
-                <select name="key" lay-filter="key">
-                </select>
+                <input type="text" name="tags" autocomplete="off" placeholder="tags" class="layui-input">
             </div>
         </div>
 
@@ -34,8 +20,7 @@
             <label class="layui-form-label"><span class="star">*</span>方法列表</label></label>
             <div class="layui-input-block">
                 <select name="method" lay-filter="key">
-                    <option value="query">query</option>
-                    <option value="delete">delete</option>
+                    <option value="send">send</option>
                 </select>
             </div>
         </div>
@@ -45,7 +30,8 @@
             <div class="layui-form-item">
                 <label class="layui-form-label"><span class="star">*</span>valueClass(填jdk类或选择已加载的非jdk类)</label>
                 <div class="layui-input-block">
-                    <input type="text" name="valueClass" autocomplete="off" placeholder="jdk自带，例如：java.lang.Long" class="layui-input" value="java.lang.String">
+                    <input type="text" name="valueClass" autocomplete="off" placeholder="jdk自带，例如：java.lang.Long"
+                           class="layui-input" value="java.lang.String">
                 </div>
                 <br>
                 <div class="layui-input-block">
@@ -56,21 +42,23 @@
 
             <div class="layui-form-item">
                 <div class="layui-input-block">
-                    <button type="reset" class="layui-btn layui-btn-primary addEnv openWin" context-id="env">添加源码&重载</button>
+                    <button type="reset" class="layui-btn layui-btn-primary addEnv openWin" context-id="env">添加源码&重载
+                    </button>
                 </div>
             </div>
         </div>
+
+
 
         <div class="layui-form-item">
             <div style="float:left;">
                 <div class="layui-form-item">
                     <div class="layui-form-text">
-                        <label class="layui-form-label" >value：</label>
+                        <label class="layui-form-label">msg：</label>
                         <div class="layui-input-block">
-                <textarea id="value"
+                <textarea id="msg"
                           placeholder="Tips:
-1.更新值:更新操作仅限value类型为String的
-2:更新时间 需要add的毫秒数，支持负数" style="width:450px;height:600px" class="layui-textarea"></textarea>
+填入需要发送的内容(复杂对象请用json格式) " style="width:450px;height:600px" class="layui-textarea"></textarea>
                         </div>
                     </div>
                 </div>
@@ -88,20 +76,17 @@
                 </div>
             </div>
         </div>
-
-
-
     </div>
-
 
 
     <div id="env" style="display:none;padding-top:10px">
         <div id="envContent">
             <div class="layui-form-item">
                 <div class="layui-form-text" style="float:left;">
-                    <label class="layui-form-label" >源码(依赖的非jdk的class也要加入提交)：</label>
+                    <label class="layui-form-label">源码(依赖的非jdk的class也要加入提交)：</label>
                     <div class="layui-input-block">
-                        <textarea style="width:680px;height:400px" id="source" placeholder="" class="layui-textarea"></textarea>
+                        <textarea style="width:680px;height:400px" id="source" placeholder=""
+                                  class="layui-textarea"></textarea>
                     </div>
                 </div>
             </div>
@@ -117,4 +102,4 @@
 
 </div>
 
-<script type="text/javascript" src="../static/js/redis.js"></script>
+<script type="text/javascript" src="../static/js/rocketmq.js"></script>

@@ -1,10 +1,12 @@
 package com.dev.tool.cache.redis.configuration;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationProperties(prefix = "spring.dev.tool.cache.redis")
+@ConditionalOnProperty(prefix = "spring.dev.tool.cache.redis", matchIfMissing = false, havingValue = "true", value = "enable")
 public class RedisConfigProperties {
 
     /**
@@ -24,6 +26,8 @@ public class RedisConfigProperties {
 
     private String keySerializerClass;
     private String valueSerializerClass;
+
+    private boolean notJdkClassSupport = false;//是否需要非jdk的外部class来支持序列化，反序列化
 
     public String getHost() {
         return host;
@@ -63,5 +67,13 @@ public class RedisConfigProperties {
 
     public void setValueSerializerClass(String valueSerializerClass) {
         this.valueSerializerClass = valueSerializerClass;
+    }
+
+    public boolean isnotJdkClassSupport() {
+        return notJdkClassSupport;
+    }
+
+    public void setnotJdkClassSupport(boolean notJdkClassSupport) {
+        this.notJdkClassSupport = notJdkClassSupport;
     }
 }

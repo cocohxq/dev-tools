@@ -1,7 +1,7 @@
 package com.dev.tool.serializer;
 
 
-import com.dev.tool.cache.redis.serializer.DevToolObjectSerializer;
+import com.dev.tool.cache.redis.serializer.DevToolRedisObjectSerializer;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.Schema;
@@ -11,7 +11,7 @@ import org.springframework.objenesis.Objenesis;
 import org.springframework.objenesis.ObjenesisStd;
 
 
-public class ProtobufObjectSerializer extends DevToolObjectSerializer {
+public class ProtobufRedisObjectSerializer extends DevToolRedisObjectSerializer {
     private Objenesis objenesis = new ObjenesisStd();
 
     @Override

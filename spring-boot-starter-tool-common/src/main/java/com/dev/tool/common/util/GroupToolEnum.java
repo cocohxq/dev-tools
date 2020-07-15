@@ -2,21 +2,20 @@ package com.dev.tool.common.util;
 
 public enum GroupToolEnum {
 
-    DUBBO(10,"dubbo",GroupEnum.RMI,10),REDIS(20,"redis",GroupEnum.CACHE,10),
-    ZOOKEEPER(30,"zookeeper",GroupEnum.CONFIG,10);
+    DUBBO(10, "dubbo", GroupEnum.RMI, 10), REDIS(20, "redis", GroupEnum.CACHE, 10),
+    ZOOKEEPER(30, "zookeeper", GroupEnum.CONFIG, 10), ROCKETMQ(40, "rocketmq", GroupEnum.JMS, 10);
 
-    GroupToolEnum(Integer index, String name,GroupEnum groupEnum,Integer order) {
+    private String name;
+    private Integer index;
+    private GroupEnum groupEnum;
+    private Integer order;
+    GroupToolEnum(Integer index, String name, GroupEnum groupEnum, Integer order) {
         this.name = name;
         this.index = index;
         this.groupEnum = groupEnum;
         this.order = order;
 
     }
-
-    private String name;
-    private Integer index;
-    private GroupEnum groupEnum;
-    private Integer order;
 
     public String getName() {
         return name;

@@ -1,8 +1,8 @@
 let nodes;
 $(document).ready(function () {
-
 });
 
+//菜单切换时调用
 function zookeeperInit(){
     nodes = [{title: "/",path: "/", parentPath:"",spread: false}];
     buildTree(nodes);

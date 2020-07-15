@@ -50,7 +50,7 @@
                 <div class="layui-form-item">
                     <div class="layui-form-text">
                         <label class="layui-form-label">入参：</label>
-                        <textarea id="param" style="width:300px;height:600px"></textarea>
+                        <textarea id="param" style="width:450px;height:600px" class="layui-textarea"></textarea>
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -63,7 +63,7 @@
             <div class="layui-form-text" style="float:left;">
                 <label class="layui-form-label" >结果：</label>
                 <div class="layui-input-block">
-                    <textarea style="width:440px;height:600px" id="result" placeholder="" class="layui-textarea"></textarea>
+                    <textarea style="width:450px;height:600px" id="result" placeholder="" class="layui-textarea"></textarea>
                 </div>
             </div>
         </div>

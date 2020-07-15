@@ -1,25 +1,19 @@
 package com.dev.tool.rmi.dubbo.configuration;
 
+import com.dev.tool.rmi.dubbo.processor.DubboToolProcessor;
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ConsumerConfig;
 import org.apache.dubbo.config.ReferenceConfig;
 import org.apache.dubbo.config.RegistryConfig;
-import com.dev.tool.common.model.Tool;
-import com.dev.tool.common.util.GroupToolEnum;
-import com.dev.tool.rmi.dubbo.processor.DubboToolProcessor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
 @Configuration
-@EnableConfigurationProperties(DubboConfigProperties.class)
-@ConditionalOnProperty(prefix = "spring.dev.tool.rmi.dubbo", matchIfMissing = false, havingValue = "true", value = "enable")
-//spring.tool.enable=true则开启工具
+@ConditionalOnBean(DubboConfigProperties.class)
 public class DubboToolAutoConfiguration {
 
 
@@ -67,16 +61,10 @@ public class DubboToolAutoConfiguration {
         return referenceConfig;
     }
 
-    @Bean(name="dubboToolProcessor")
-    public DubboToolProcessor initDubboToolProcessor(){
+    @Bean(name = "dubboToolProcessor")
+    public DubboToolProcessor initDubboToolProcessor() {
         DubboToolProcessor dubboToolProcessor = new DubboToolProcessor();
         return dubboToolProcessor;
-    }
-
-    @Bean(name = "dubboTool")
-    public Tool initDubboTool(DubboToolProcessor dubboToolProcessor) {
-        Tool tool = new Tool(GroupToolEnum.DUBBO, dubboToolProcessor);
-        return tool;
     }
 
 }

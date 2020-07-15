@@ -16,7 +16,7 @@ public class ToolService {
 
 
     private final Map<Integer, ToolGroup> groupMap = new HashMap<>();
-    private final Map<Integer, Processor> toolProcessorMap = new HashMap<>();
+    private final Map<Integer, Processor> processorMap = new HashMap<>();
 
     /**
      * 执行请求
@@ -25,23 +25,23 @@ public class ToolService {
      * @return
      */
     public Result execute(Event event) {
-        return toolProcessorMap.get(event.getGroupToolEnum().getIndex()).process(event);
+        return processorMap.get(event.getGroupToolEnum().getIndex()).process(event);
     }
 
     /**
      * 注册工具
      *
-     * @param tool
+     * @param processor
      */
-    public void registryTool(Tool tool) {
-        GroupEnum groupEnum = tool.getGroupToolEnum().getGroupEnum();
+    public void buildTool(Processor processor) {
+        GroupEnum groupEnum = processor.matchGroupToolEnum().getGroupEnum();
         ToolGroup toolGroup = groupMap.get(groupEnum.getIndex());
-        if(null == toolGroup){
-            toolGroup = new ToolGroup(groupEnum,new ArrayList<>());
-            groupMap.put(groupEnum.getIndex(),toolGroup);
+        if (null == toolGroup) {
+            toolGroup = new ToolGroup(groupEnum, new ArrayList<>());
+            groupMap.put(groupEnum.getIndex(), toolGroup);
         }
-        toolGroup.getToolList().add(tool);
-        toolProcessorMap.put(tool.getGroupToolEnum().getIndex(), tool.getProcessor());
+        toolGroup.getToolList().add(new Tool(processor));
+        processorMap.put(processor.matchGroupToolEnum().getIndex(), processor);
     }
 
     /**

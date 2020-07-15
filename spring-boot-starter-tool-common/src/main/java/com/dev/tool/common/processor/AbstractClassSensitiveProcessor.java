@@ -48,6 +48,7 @@ public abstract class AbstractClassSensitiveProcessor extends AbstractProcessor 
      *
      * @param event
      */
+    @Override
     public void prepare(Event event) {
         boolean recreated = EventEnum.RELOAD.equals(event.getEventEnum()) ? true : false;//如果是重新加载需要重新创建
         Thread.currentThread().setContextClassLoader(classLoader(recreated));

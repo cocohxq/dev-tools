@@ -9,13 +9,11 @@ import com.dev.tool.common.util.GroupToolEnum;
 public class Tool {
 
     private GroupToolEnum groupToolEnum;
-    private Processor processor;
     private String toolName;
     private int toolIndex;
 
-    public Tool(GroupToolEnum groupToolEnum, Processor processor) {
-        this.groupToolEnum = groupToolEnum;
-        this.processor = processor;
+    public Tool(Processor processor) {
+        this.groupToolEnum = processor.matchGroupToolEnum();
         this.toolName = groupToolEnum.getName();
         this.toolIndex = groupToolEnum.getIndex();
     }
@@ -28,14 +26,6 @@ public class Tool {
         this.groupToolEnum = groupToolEnum;
         this.toolName = groupToolEnum.getName();
         this.toolIndex = groupToolEnum.getIndex();
-    }
-
-    public Processor getProcessor() {
-        return processor;
-    }
-
-    public void setProcessor(Processor processor) {
-        this.processor = processor;
     }
 
     public String getToolName() {
